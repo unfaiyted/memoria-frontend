@@ -49,8 +49,13 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "1.6.12",
+		"@tiptap/core": "^2.11.5",
+		"@tiptap/extension-code-block-lowlight": "^2.11.5",
+		"@tiptap/extension-color": "^2.11.5",
+		"@tiptap/starter-kit": "^2.11.5",
 		"@vincjo/datatables": "^2.2.0",
 		"highlight.js": "11.11.0",
+		"lowlight": "^3.3.0",
 		"openapi-fetch": "^0.13.3",
 		"swagger2openapi": "^7.0.8"
 	}
