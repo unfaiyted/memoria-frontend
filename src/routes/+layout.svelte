@@ -10,6 +10,8 @@
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
 
+	import { initializeStores, Toast } from '@skeletonlabs/skeleton';
+
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 
 	hljs.registerLanguage('xml', xml); // for HTML
@@ -17,6 +19,8 @@
 	hljs.registerLanguage('javascript', javascript);
 	hljs.registerLanguage('typescript', typescript);
 	storeHighlightJs.set(hljs);
+
+	initializeStores();
 
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
@@ -31,6 +35,7 @@
 </script>
 
 <div class="flex min-h-screen overflow-hidden">
+	<Toast />
 	<div
 		class={`w-[${sidebarOpen ? '280px' : '50px'}] transition-all min-v-screen  duration-300 ${sidebarOpen ? '' : '-translate-x-[0px]'}`}
 	>

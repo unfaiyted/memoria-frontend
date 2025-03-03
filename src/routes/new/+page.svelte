@@ -1,5 +1,5 @@
 <script>
-	import Editor from '$lib/components/utils/Editor.svelte';
+	import Editor from '$lib/components/utils/editor/Editor.svelte';
 	// Form state
 	let title = '';
 	let content = '';

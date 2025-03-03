@@ -1,6 +1,10 @@
 <script>
 	import { getToastStore } from '@skeletonlabs/skeleton';
 
+	import { page } from '$app/stores';
+
+	// Access the ID from the URL parameter
+	$: id = $page.params.id;
 	// Paste data (would come from your route)
 	export let pasteContent = 'This is a sample paste content';
 	export let expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // Example: 7 days from now
@@ -67,21 +71,29 @@
 
 			<div class="flex gap-2">
 				<button class="btn variant-filled-primary" on:click={copyToClipboard}>
-					<span class="material-symbols-outlined mr-2">content_copy</span>
-					Copy
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="1em"
+						height="1em"
+						viewBox="0 0 256 256"
+						{...$$props}
+						><path
+							fill="#fff"
+							d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8m-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"
+						/></svg
+					>
 				</button>
 
 				{#if isLoggedIn && isOwner}
 					<button class="btn variant-filled-error" on:click={deletePaste}>
-						<span class="material-symbols-outlined mr-2">delete</span>
+						<span class="material-sympbols-outlined mr-2">delete</span>
 						Delete
 					</button>
 				{/if}
 			</div>
 		</header>
 
-		<div class="card variant-ghost p-4">
-			<pre class="whitespace-pre-wrap break-words">{pasteContent}</pre>
-		</div>
+		<div class="card variant-ghost p-4"></div>
+		<pre class="whitespace-pre-wrap break-words">{pasteContent}</pre>
 	</div>
 </div>
