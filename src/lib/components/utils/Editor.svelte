@@ -18,34 +18,9 @@
 				StarterKit
 			],
 			content: `
-            <h2>
-              Hi there,
-            </h2>
             <p>
-              this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text editor. But wait until you see the lists:
+             Paste or type your input here... 
             </p>
-            <ul>
-              <li>
-                That’s a bullet list with one …
-              </li>
-              <li>
-                … or two list items.
-              </li>
-            </ul>
-            <p>
-              Isn’t that great? And all of that is editable. But wait, there’s more. Let’s try a code block:
-            </p>
-            <pre><code class="language-css">body {
-  display: none;
-}</code></pre>
-            <p>
-              I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
-            </p>
-            <blockquote>
-              Wow, that’s amazing. Good work, boy! 👏
-              <br />
-              — Mom
-            </blockquote>
           `,
 			onTransaction: () => {
 				// force re-render so `editor.isActive` works as expected
@@ -56,8 +31,10 @@
 </script>
 
 {#if editor}
-	<div class="control-group">
-		<div class="button-group">
+	<div
+		class="previewer-header bg-surface-200-700-token p-4 flex justify-between items-center gap-4 card-header"
+	>
+		<div class="btn-group btn-sm variant-filled overflow-x-auto">
 			<button
 				on:click={() => console.log && editor.chain().focus().toggleBold().run()}
 				disabled={!editor.can().chain().focus().toggleBold().run()}
@@ -79,13 +56,13 @@
 			>
 				Strike
 			</button>
-			<button
-				on:click={() => editor.chain().focus().toggleCode().run()}
-				disabled={!editor.can().chain().focus().toggleCode().run()}
-				class={editor.isActive('code') ? 'is-active' : ''}
-			>
-				Code
-			</button>
+			<!-- <button -->
+			<!-- 	on:click={() => editor.chain().focus().toggleCode().run()} -->
+			<!-- 	disabled={!editor.can().chain().focus().toggleCode().run()} -->
+			<!-- 	class={editor.isActive('code') ? 'is-active' : ''} -->
+			<!-- > -->
+			<!-- 	Code -->
+			<!-- </button> -->
 			<button on:click={() => editor.chain().focus().unsetAllMarks().run()}>Clear marks</button>
 			<button on:click={() => editor.chain().focus().clearNodes().run()}>Clear nodes</button>
 			<button
@@ -158,18 +135,18 @@
 				Horizontal rule
 			</button>
 			<button on:click={() => editor.chain().focus().setHardBreak().run()}>Hard break</button>
-			<button
-				on:click={() => editor.chain().focus().undo().run()}
-				disabled={!editor.can().chain().focus().undo().run()}
-			>
-				Undo
-			</button>
-			<button
-				on:click={() => editor.chain().focus().redo().run()}
-				disabled={!editor.can().chain().focus().redo().run()}
-			>
-				Redo
-			</button>
+			<!-- <button -->
+			<!-- 	on:click={() => editor.chain().focus().undo().run()} -->
+			<!-- 	disabled={!editor.can().chain().focus().undo().run()} -->
+			<!-- > -->
+			<!-- 	Undo -->
+			<!-- </button> -->
+			<!-- <button -->
+			<!-- 	on:click={() => editor.chain().focus().redo().run()} -->
+			<!-- 	disabled={!editor.can().chain().focus().redo().run()} -->
+			<!-- > -->
+			<!-- 	Redo -->
+			<!-- </button> -->
 			<button
 				on:click={() => editor.chain().focus().setColor('#958DF1').run()}
 				class={editor.isActive('textStyle', { color: '#958DF1' }) ? 'is-active' : ''}
@@ -179,4 +156,4 @@
 		</div>
 	</div>
 {/if}
-<div bind:this={element} class="bg-slate-50"></div>
+<section bind:this={element} class=" bg-surface-800"></section>

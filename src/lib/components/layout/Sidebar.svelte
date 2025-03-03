@@ -8,7 +8,7 @@
 
 	// Props with defaults
 	export let isOpen = true;
-	export let title = 'PasteBin';
+	export let title = 'Memoria';
 
 	// Create a tweened store for smooth width animation
 	const width = tweened(isOpen ? 16 : 4, {
@@ -95,7 +95,7 @@
 		<button
 			class="absolute top-4 {isOpen
 				? 'right-4'
-				: 'right-1'} z-10 rounded-full p-1 bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-all"
+				: 'right-4'} z-10 rounded-full p-1 bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-all"
 			on:click={toggleSidebar}
 			aria-label={isOpen ? 'Close Sidebar' : 'Open Sidebar'}
 		>
@@ -111,11 +111,24 @@
 
 		<!-- Logo/Brand -->
 		<div class="flex items-center {isOpen ? 'space-x-2' : 'justify-center'} mb-6">
-			<div class="h-8 w-8 rounded-md bg-indigo-600 flex-shrink-0"></div>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class={`${isOpen ? '' : 'opacity-0'} lucide w-8 h-8 text-indigo-600`}
+				><path d="m18 16 4-4-4-4"></path><path d="m6 8-4 4 4 4"></path><path d="m14.5 4-5 16"
+				></path></svg
+			>
 			{#if isOpen}
 				<h1
 					transition:fade={{ duration: 200 }}
-					class="text-xl font-semibold text-zinc-900 whitespace-nowrap overflow-hidden"
+					class="text-xl font-semibold whitespace-nowrap overflow-hidden"
 				>
 					{title}
 				</h1>
@@ -131,7 +144,7 @@
 							type="text"
 							placeholder="Search pastes..."
 							bind:value={searchQuery}
-							class="w-full rounded-md border border-zinc-300 py-2 pl-10 pr-3 text-sm placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+							class="input w-full border py-2 pl-10 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
 						/>
 						<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
 							<svg

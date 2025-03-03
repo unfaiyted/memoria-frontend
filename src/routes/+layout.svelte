@@ -32,7 +32,7 @@
 
 <div class="flex min-h-screen overflow-hidden">
 	<div
-		class={`w-[${sidebarOpen ? '280px' : '50px'}] transition-all overflow-y-auto min-v-screen  duration-300 ${sidebarOpen ? '' : '-translate-x-[0px]'}`}
+		class={`w-[${sidebarOpen ? '280px' : '50px'}] transition-all min-v-screen  duration-300 ${sidebarOpen ? '' : '-translate-x-[0px]'}`}
 	>
 		<Sidebar bind:isOpen={sidebarOpen} on:toggle={handleToggle} />
 	</div>
