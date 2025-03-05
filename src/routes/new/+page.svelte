@@ -89,28 +89,28 @@
 		<!-- Content Editor -->
 		<div>
 			<div class="flex justify-between items-center mb-1">
-				<label for="content" class="label">Paste Content</label>
 				<div class="flex space-x-2">
-					<button
-						type="button"
-						class="px-3 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-700"
-						on:click={pasteFromClipboard}
-					>
-						Paste to
-					</button>
-					<button
-						type="button"
-						class="px-3 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-700"
-						on:click={copyToClipboard}
-					>
-						Copy from
-					</button>
+					<!-- <button -->
+					<!-- 	type="button" -->
+					<!-- 	class="px-3 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-700" -->
+					<!-- 	on:click={pasteFromClipboard} -->
+					<!-- > -->
+					<!-- 	Paste to -->
+					<!-- </button> -->
+					<!-- <button -->
+					<!-- 	type="button" -->
+					<!-- 	class="px-3 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-700" -->
+					<!-- 	on:click={copyToClipboard} -->
+					<!-- > -->
+					<!-- 	Copy from -->
+					<!-- </button> -->
 				</div>
 			</div>
 
 			<div class="card">
 				<!-- Editor with content binding -->
-				<Editor bind:value={content} />
+				<header class="pt-4 pl-4 mb-2"><h3 class="h3">Paste Content Below</h3></header>
+				<div class="p-2 bg-surface-200-700-token"><Editor bind:value={content} /></div>
 				<footer class="card-footer border-t-2 border-surface-700">
 					<em class="text-xs">Editor can handle code and color coding</em>
 				</footer>
