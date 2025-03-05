@@ -4,7 +4,7 @@
 	import { GET } from '$lib/api/client';
 	import type { UserResponse } from '$lib/api/types';
 	import { baseUrl } from '$lib/stores/api';
-	import Datatable from '$lib/components/Datatable.svelte';
+	import Datatable from '$lib/components/tables/Datatable.svelte';
 	// Extract the user type from the OpenAPI paths
 
 	let users: UserResponse[] = [];

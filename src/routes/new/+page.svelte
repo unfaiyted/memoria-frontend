@@ -1,11 +1,17 @@
-<script>
+<script lang="ts">
 	import Editor from '$lib/components/utils/editor/Editor.svelte';
+	import { pastesStore } from '$lib/stores/pastes';
+	import { goto } from '$app/navigation';
+	import { getToastStore } from '@skeletonlabs/skeleton';
+
+	const toastStore = getToastStore();
 	// Form state
 	let title = '';
 	let content = '';
 	let expiration = '1d'; // Default: 1 day
 	let password = '';
 	let isPrivate = false;
+	let isLoading = false;
 
 	// Expiration options
 	const expirationOptions = [
@@ -17,38 +23,68 @@
 		{ value: 'never', label: 'Never' }
 	];
 
-	// Handle form submission
-	function handleSubmit() {
-		const pasteData = {
-			title,
-			content,
-			expiration,
-			password: password.length > 0 ? password : null,
-			isPrivate
-		};
+	// Calculate expiration date based on selected option
+	function calculateExpiresAt(option: string) {
+		if (option === 'never') return undefined;
 
-		console.log('Submitting paste:', pasteData);
-		// API call would go here
-	}
-
-	// Clipboard functions
-	async function pasteFromClipboard() {
-		try {
-			const text = await navigator.clipboard.readText();
-			content = text;
-		} catch (err) {
-			console.error('Failed to read clipboard contents:', err);
-			alert('Unable to access clipboard. Make sure you have granted permission.');
+		const now = new Date();
+		switch (option) {
+			case '30m':
+				return new Date(now.getTime() + 30 * 60000).toISOString();
+			case '1h':
+				return new Date(now.getTime() + 60 * 60000).toISOString();
+			case '1d':
+				return new Date(now.getTime() + 24 * 60 * 60000).toISOString();
+			case '1w':
+				return new Date(now.getTime() + 7 * 24 * 60 * 60000).toISOString();
+			case '1m':
+				return new Date(now.getTime() + 30 * 24 * 60 * 60000).toISOString();
+			default:
+				return new Date(now.getTime() + 24 * 60 * 60000).toISOString();
 		}
 	}
 
-	async function copyToClipboard() {
+	// Handle form submission
+	async function handleSubmit() {
 		try {
-			await navigator.clipboard.writeText(content);
-			alert('Content copied to clipboard!');
-		} catch (err) {
-			console.error('Failed to copy to clipboard:', err);
-			alert('Unable to copy to clipboard. Make sure you have granted permission.');
+			isLoading = true;
+
+			// Determine privacy setting
+			let privacy = 'public';
+			if (password) {
+				privacy = 'password';
+			} else if (isPrivate) {
+				privacy = 'private';
+			}
+
+			const pasteData = {
+				title,
+				content,
+				expires_at: calculateExpiresAt(expiration),
+				privacy: privacy as 'public' | 'private' | 'password',
+				syntax_highlight: 'auto' // Could implement language detection here
+			};
+
+			console.log('pasteData', pasteData);
+
+			// Create paste using the store
+			const result = await pastesStore.createPaste(pasteData);
+
+			if (result) {
+				toastStore.trigger({
+					message: 'Paste created successfully!',
+					background: 'variant-filled-success'
+				});
+				// Navigate to the new paste
+				goto(`/paste/${result.id}`);
+			}
+		} catch (error) {
+			toastStore.trigger({
+				message: `Error creating paste: ${error.message || 'Unknown error'}`,
+				background: 'variant-filled-error'
+			});
+		} finally {
+			isLoading = false;
 		}
 	}
 </script>
@@ -72,6 +108,7 @@
 					bind:value={title}
 					placeholder="Enter a title for your paste"
 					class="input"
+					required
 				/>
 			</div>
 
@@ -90,20 +127,7 @@
 		<div>
 			<div class="flex justify-between items-center mb-1">
 				<div class="flex space-x-2">
-					<!-- <button -->
-					<!-- 	type="button" -->
-					<!-- 	class="px-3 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-700" -->
-					<!-- 	on:click={pasteFromClipboard} -->
-					<!-- > -->
-					<!-- 	Paste to -->
-					<!-- </button> -->
-					<!-- <button -->
-					<!-- 	type="button" -->
-					<!-- 	class="px-3 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-700" -->
-					<!-- 	on:click={copyToClipboard} -->
-					<!-- > -->
-					<!-- 	Copy from -->
-					<!-- </button> -->
+					<!-- Buttons could be added here -->
 				</div>
 			</div>
 
@@ -115,8 +139,6 @@
 					<em class="text-xs">Editor can handle code and color coding</em>
 				</footer>
 			</div>
-
-			<!-- Message -->
 		</div>
 
 		<!-- Password Protection and Privacy on same line -->
@@ -150,8 +172,13 @@
 			<button
 				type="submit"
 				class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+				disabled={isLoading}
 			>
-				Create Paste
+				{#if isLoading}
+					Creating...
+				{:else}
+					Create Paste
+				{/if}
 			</button>
 		</div>
 	</form>

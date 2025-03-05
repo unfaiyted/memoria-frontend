@@ -70,7 +70,7 @@
 			</div>
 
 			<div class="flex gap-2">
-				<button class="btn variant-filled-primary" on:click={copyToClipboard}>
+				<button class="btn variant-filled-primary" on:click={copyToClipboard} aria-label="Copy">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="1em"

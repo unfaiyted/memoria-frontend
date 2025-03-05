@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "API Server for Listarr application",
-    "title": "Listarr API",
+    "description": "API Server for Memoria application",
+    "title": "Memoria API",
     "termsOfService": "http://swagger.io/terms/",
     "contact": {
       "name": "API Support",
@@ -16,20 +16,20 @@
     "version": "1.0"
   },
   "paths": {
-    "/config": {
+    "/health": {
       "get": {
-        "description": "Retrieve current application configuration",
+        "description": "returns JSON object with health statuses.",
         "tags": [
-          "config"
+          "health"
         ],
-        "summary": "Get configuration",
+        "summary": "checks app and database health",
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.ConfigResponse"
+                  "$ref": "#/components/schemas/models.HealthResponse"
                 }
               }
             }
@@ -39,28 +39,30 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.ConfigResponse"
+                  "$ref": "#/components/schemas/models.ErrorResponse"
                 }
               }
             }
           }
         }
-      },
+      }
+    },
+    "/paste": {
       "put": {
-        "description": "Update application configuration settings",
+        "description": "Update a pastes value",
         "tags": [
-          "config"
+          "pastes"
         ],
-        "summary": "Update configuration",
+        "summary": "Update paste",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/models.Configuration"
+                "$ref": "#/components/schemas/models.UpdatePasteRequest"
               }
             }
           },
-          "description": "Configuration settings",
+          "description": "Updated paste data",
           "required": true
         },
         "responses": {
@@ -69,7 +71,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.ConfigResponse"
+                  "$ref": "#/components/schemas/models.PasteResponse"
                 }
               }
             }
@@ -79,7 +81,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.ConfigResponse"
+                  "$ref": "#/components/schemas/models.ErrorResponse"
                 }
               }
             }
@@ -89,7 +91,117 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.ConfigResponse"
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Creates a new paste",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Create paste",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/models.CreatePasteRequest"
+              }
+            }
+          },
+          "description": "Paste data",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.PasteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "delete a paste by ID",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Deletes paste by ID",
+        "parameters": [
+          {
+            "description": "Paste ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.PasteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
                 }
               }
             }
@@ -97,20 +209,50 @@
         }
       }
     },
-    "/config/reset": {
-      "post": {
-        "description": "Reset configuration to default values",
+    "/paste/all": {
+      "get": {
+        "description": "Returns a list of all the pastes. # TODO: pagination",
         "tags": [
-          "config"
+          "pastes"
         ],
-        "summary": "Reset configuration",
+        "summary": "Lists out all the pastes",
+        "parameters": [
+          {
+            "description": "Page number",
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "description": "Items per page",
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.ConfigResponse"
+                  "$ref": "#/components/schemas/models.PasteListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
                 }
               }
             }
@@ -120,7 +262,59 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.ConfigResponse"
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paste/{id}": {
+      "get": {
+        "description": "Retrieve a paste by ID",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Gets a specific paste",
+        "parameters": [
+          {
+            "description": "Paste ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.PasteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
                 }
               }
             }
@@ -383,543 +577,216 @@
       }
     },
     "schemas": {
-      "models.ConfigResponse": {
-        "description": "Configuration response wrapper",
+      "models.CreatePasteRequest": {
         "type": "object",
+        "required": [
+          "content",
+          "privacy",
+          "title"
+        ],
         "properties": {
-          "data": {
-            "$ref": "#/components/schemas/models.Configuration"
-          },
-          "error": {
+          "content": {
             "type": "string"
-          }
-        }
-      },
-      "models.Configuration": {
-        "description": "Complete application configuration settings",
-        "type": "object",
-        "properties": {
-          "app": {
-            "description": "App contains core application settings",
-            "type": "object",
-            "required": [
-              "apiBaseURL",
-              "appURL",
-              "environment",
-              "logLevel",
-              "maxPageSize",
-              "name"
-            ],
-            "properties": {
-              "apiBaseURL": {
-                "type": "string",
-                "example": "http://localhost:8080"
-              },
-              "appURL": {
-                "type": "string",
-                "example": "http://localhost:3000"
-              },
-              "environment": {
-                "type": "string",
-                "enum": [
-                  "development",
-                  "staging",
-                  "production"
-                ],
-                "example": "development"
-              },
-              "logLevel": {
-                "type": "string",
-                "enum": [
-                  "debug",
-                  "info",
-                  "warn",
-                  "error"
-                ],
-                "example": "info"
-              },
-              "maxPageSize": {
-                "type": "integer",
-                "maximum": 1000,
-                "minimum": 1,
-                "example": 100
-              },
-              "name": {
-                "type": "string",
-                "example": "Listarr"
-              }
-            }
           },
-          "auth": {
-            "description": "Auth contains authentication settings",
-            "type": "object",
-            "required": [
-              "jwtSecret",
-              "sessionTimeout",
-              "tokenExpiration"
-            ],
-            "properties": {
-              "allowedOrigins": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "example": [
-                  "http://localhost:3000"
-                ]
-              },
-              "enable2FA": {
-                "type": "boolean",
-                "example": false
-              },
-              "enableLocal": {
-                "type": "boolean",
-                "example": true
-              },
-              "jwtSecret": {
-                "type": "string",
-                "example": "your-secret-key"
-              },
-              "sessionTimeout": {
-                "type": "integer",
-                "minimum": 1,
-                "example": 60
-              },
-              "tokenExpiration": {
-                "type": "integer",
-                "minimum": 1,
-                "example": 24
-              }
-            }
-          },
-          "database": {
-            "description": "Database contains database connection settings",
-            "type": "object",
-            "required": [
-              "maxConns",
-              "timeout",
-              "url"
-            ],
-            "properties": {
-              "maxConns": {
-                "type": "integer",
-                "minimum": 1,
-                "example": 20
-              },
-              "timeout": {
-                "type": "integer",
-                "minimum": 1,
-                "example": 30
-              },
-              "url": {
-                "type": "string",
-                "example": "postgres://localhost:5432/listarr"
-              }
-            }
-          },
-          "http": {
-            "description": "HTTP contains HTTP server configuration",
-            "type": "object",
-            "required": [
-              "idleTimeout",
-              "port",
-              "readTimeout",
-              "writeTimeout"
-            ],
-            "properties": {
-              "enableSSL": {
-                "type": "boolean",
-                "example": false
-              },
-              "idleTimeout": {
-                "type": "integer",
-                "minimum": 1,
-                "example": 60
-              },
-              "port": {
-                "type": "string",
-                "example": "8080"
-              },
-              "proxyEnabled": {
-                "type": "boolean",
-                "example": false
-              },
-              "proxyURL": {
-                "type": "string",
-                "example": "http://proxy:8080"
-              },
-              "rateLimitEnabled": {
-                "type": "boolean",
-                "example": true
-              },
-              "readTimeout": {
-                "type": "integer",
-                "minimum": 1,
-                "example": 30
-              },
-              "requestsPerMin": {
-                "type": "integer",
-                "minimum": 0,
-                "example": 100
-              },
-              "sslCert": {
-                "type": "string",
-                "example": "/path/to/cert.pem"
-              },
-              "sslKey": {
-                "type": "string",
-                "example": "/path/to/key.pem"
-              },
-              "writeTimeout": {
-                "type": "integer",
-                "minimum": 1,
-                "example": 30
-              }
-            }
-          },
-          "integrations": {
-            "description": "Integrations contains all third-party service configurations",
-            "type": "object",
-            "properties": {
-              "emby": {
-                "$ref": "#/components/schemas/models.EmbyConfig"
-              },
-              "jellyfin": {
-                "$ref": "#/components/schemas/models.JellyfinConfig"
-              },
-              "navidrome": {
-                "$ref": "#/components/schemas/models.NavidromeConfig"
-              },
-              "plex": {
-                "$ref": "#/components/schemas/models.PlexConfig"
-              },
-              "spotify": {
-                "$ref": "#/components/schemas/models.SpotifyConfig"
-              },
-              "trakt": {
-                "$ref": "#/components/schemas/models.TraktConfig"
-              }
-            }
-          },
-          "spotdl": {
-            "description": "SpotDL contains Spotify download integration settings",
-            "type": "object",
-            "required": [
-              "concurrentDownloads",
-              "downloadDirectory",
-              "fileFormat",
-              "maxRetries",
-              "namingTemplate",
-              "qualityPreset"
-            ],
-            "properties": {
-              "concurrentDownloads": {
-                "type": "integer",
-                "minimum": 1,
-                "example": 2
-              },
-              "downloadDirectory": {
-                "type": "string",
-                "example": "./downloads"
-              },
-              "enabled": {
-                "type": "boolean",
-                "example": false
-              },
-              "fileFormat": {
-                "type": "string",
-                "enum": [
-                  "mp3",
-                  "flac"
-                ],
-                "example": "mp3"
-              },
-              "maxRetries": {
-                "type": "integer",
-                "minimum": 0,
-                "example": 3
-              },
-              "namingTemplate": {
-                "type": "string",
-                "example": "{artist} - {title}"
-              },
-              "notifyOnComplete": {
-                "type": "boolean",
-                "example": true
-              },
-              "qualityPreset": {
-                "type": "string",
-                "enum": [
-                  "low",
-                  "medium",
-                  "high"
-                ],
-                "example": "high"
-              }
-            }
-          },
-          "sync": {
-            "description": "Sync contains synchronization settings",
-            "type": "object",
-            "required": [
-              "conflictStrategy",
-              "interval"
-            ],
-            "properties": {
-              "collections": {
-                "type": "object",
-                "required": [
-                  "maxItems"
-                ],
-                "properties": {
-                  "allowedTypes": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "example": [
-                      "series",
-                      "movies",
-                      "music"
-                    ]
-                  },
-                  "enableSync": {
-                    "type": "boolean",
-                    "example": true
-                  },
-                  "maxItems": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "example": 5000
-                  },
-                  "syncInterval": {
-                    "type": "string",
-                    "example": "0 */12 * * *"
-                  }
-                }
-              },
-              "conflictStrategy": {
-                "type": "string",
-                "enum": [
-                  "overwrite",
-                  "skip",
-                  "merge"
-                ],
-                "example": "skip"
-              },
-              "enabled": {
-                "type": "boolean",
-                "example": true
-              },
-              "interval": {
-                "type": "string",
-                "example": "0 */12 * * *"
-              },
-              "playlists": {
-                "type": "object",
-                "required": [
-                  "maxItems"
-                ],
-                "properties": {
-                  "allowedTypes": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "example": [
-                      "music",
-                      "media"
-                    ]
-                  },
-                  "enableSync": {
-                    "type": "boolean",
-                    "example": true
-                  },
-                  "maxItems": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "example": 1000
-                  },
-                  "syncInterval": {
-                    "type": "string",
-                    "example": "0 */6 * * *"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "models.EmbyConfig": {
-        "description": "Emby media server configuration",
-        "type": "object",
-        "properties": {
-          "apiKey": {
+          "expires_at": {
             "type": "string",
-            "example": "your-api-key"
+            "example": "2023-01-08T00:00:00Z"
           },
-          "enabled": {
-            "type": "boolean",
-            "example": false
-          },
-          "host": {
+          "privacy": {
             "type": "string",
-            "example": "localhost"
+            "enum": [
+              "public",
+              "private",
+              "password"
+            ]
           },
-          "port": {
-            "type": "integer",
-            "example": 8096
+          "syntax_highlight": {
+            "type": "string"
           },
-          "ssl": {
-            "type": "boolean",
-            "example": false
-          },
-          "username": {
-            "type": "string",
-            "example": "admin"
+          "title": {
+            "type": "string"
           }
         }
       },
       "models.ErrorResponse": {
         "type": "object",
         "properties": {
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          },
           "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/models.ErrorType"
+              }
+            ],
+            "example": "FAILED_CHECK"
+          },
+          "message": {
             "type": "string",
-            "example": "error message"
+            "example": "This is a pretty message"
           }
         }
       },
-      "models.JellyfinConfig": {
-        "description": "Jellyfin media server configuration",
+      "models.ErrorType": {
+        "type": "string",
+        "enum": [
+          "FAILED_CHECK",
+          "UNAUTHORIZED",
+          "NOT_FOUND",
+          "BAD_REQUEST",
+          "INTERNAL_ERROR"
+        ],
+        "x-enum-varnames": [
+          "ErrorTypeFailedCheck",
+          "ErrorTypeUnauthorized",
+          "ErrorTypeNotFound",
+          "ErrorTypeBadRequest",
+          "ErrorTypeInternalError"
+        ]
+      },
+      "models.HealthResponse": {
         "type": "object",
+        "required": [
+          "application",
+          "database",
+          "status"
+        ],
         "properties": {
-          "apiKey": {
-            "type": "string",
-            "example": "your-api-key"
-          },
-          "enabled": {
+          "application": {
             "type": "boolean",
-            "example": false
+            "example": true
           },
-          "host": {
+          "database": {
+            "type": "boolean",
+            "example": true
+          },
+          "status": {
+            "description": "Overall status of the system",
             "type": "string",
-            "example": "localhost"
+            "enum": [
+              "up",
+              "down",
+              "degraded"
+            ],
+            "example": "up"
+          }
+        }
+      },
+      "models.Paste": {
+        "description": "A text snippet with formatting, expiration, and privacy settings",
+        "type": "object",
+        "required": [
+          "content",
+          "id",
+          "privacy",
+          "syntax_highlight",
+          "title"
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "console.log('Hello world');"
           },
-          "port": {
+          "created_at": {
+            "type": "string",
+            "example": "2023-01-01T00:00:00Z"
+          },
+          "expires_at": {
+            "type": "string",
+            "example": "2023-01-08T00:00:00Z"
+          },
+          "id": {
             "type": "integer",
-            "example": 8096
+            "example": 123111
           },
-          "ssl": {
-            "type": "boolean",
-            "example": false
-          },
-          "username": {
+          "privacy": {
+            "description": "\"public\", \"private\", \"password\"",
             "type": "string",
-            "example": "admin"
+            "enum": [
+              "public",
+              "private",
+              "password"
+            ],
+            "example": "public"
+          },
+          "syntax_highlight": {
+            "type": "string",
+            "example": "javascript"
+          },
+          "title": {
+            "type": "string",
+            "example": "My Code Snippet"
+          },
+          "user_id": {
+            "type": "string",
+            "example": "u98765zyxwv"
           }
         }
       },
-      "models.NavidromeConfig": {
-        "description": "Navidrome music server configuration",
+      "models.PasteListResponse": {
+        "description": "List of pastes response wrapper",
         "type": "object",
         "properties": {
-          "enabled": {
-            "type": "boolean",
-            "example": false
+          "count": {
+            "type": "integer"
           },
-          "host": {
-            "type": "string",
-            "example": "localhost"
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/models.Paste"
+            }
           },
-          "password": {
-            "type": "string",
-            "example": "your-password"
-          },
-          "port": {
-            "type": "integer",
-            "example": 4533
-          },
-          "ssl": {
-            "type": "boolean",
-            "example": false
-          },
-          "username": {
-            "type": "string",
-            "example": "admin"
+          "error": {
+            "type": "string"
           }
         }
       },
-      "models.PlexConfig": {
-        "description": "Plex media server configuration",
+      "models.PasteResponse": {
+        "description": "Paste response wrapper",
         "type": "object",
         "properties": {
-          "enabled": {
-            "type": "boolean",
-            "example": false
+          "data": {
+            "$ref": "#/components/schemas/models.Paste"
           },
-          "host": {
-            "type": "string",
-            "example": "localhost"
-          },
-          "port": {
-            "type": "integer",
-            "example": 32400
-          },
-          "ssl": {
-            "type": "boolean",
-            "example": false
-          },
-          "token": {
-            "type": "string",
-            "example": "your-plex-token"
+          "error": {
+            "type": "string"
           }
         }
       },
-      "models.SpotifyConfig": {
-        "description": "Spotify configuration",
+      "models.UpdatePasteRequest": {
         "type": "object",
+        "required": [
+          "content",
+          "id",
+          "privacy",
+          "title"
+        ],
         "properties": {
-          "clientId": {
-            "type": "string",
-            "example": "your-client-id"
+          "content": {
+            "type": "string"
           },
-          "clientSecret": {
+          "expires_at": {
             "type": "string",
-            "example": "your-client-secret"
+            "example": "2023-01-08T00:00:00Z"
           },
-          "enabled": {
-            "type": "boolean",
-            "example": false
+          "id": {
+            "type": "integer"
           },
-          "redirectUri": {
+          "privacy": {
             "type": "string",
-            "example": "http://localhost:8080/callback"
+            "enum": [
+              "public",
+              "private",
+              "password"
+            ]
           },
-          "scopes": {
-            "type": "string",
-            "example": "user-library-read playlist-read-private"
-          }
-        }
-      },
-      "models.TraktConfig": {
-        "description": "Trakt.tv configuration",
-        "type": "object",
-        "properties": {
-          "clientId": {
-            "type": "string",
-            "example": "your-client-id"
+          "syntax_highlight": {
+            "type": "string"
           },
-          "clientSecret": {
-            "type": "string",
-            "example": "your-client-secret"
-          },
-          "enabled": {
-            "type": "boolean",
-            "example": false
-          },
-          "redirectUri": {
-            "type": "string",
-            "example": "http://localhost:8080/callback"
+          "title": {
+            "type": "string"
           }
         }
       },

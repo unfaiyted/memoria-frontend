@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/config": {
+    "/health": {
         parameters: {
             query?: never;
             header?: never;
@@ -12,8 +12,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get configuration
-         * @description Retrieve current application configuration
+         * checks app and database health
+         * @description returns JSON object with health statuses.
          */
         get: {
             parameters: {
@@ -30,7 +30,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.ConfigResponse"];
+                        "application/json": components["schemas"]["models.HealthResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -39,14 +39,30 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.ConfigResponse"];
+                        "application/json": components["schemas"]["models.ErrorResponse"];
                     };
                 };
             };
         };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/paste": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
         /**
-         * Update configuration
-         * @description Update application configuration settings
+         * Update paste
+         * @description Update a pastes value
          */
         put: {
             parameters: {
@@ -55,10 +71,10 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            /** @description Configuration settings */
+            /** @description Updated paste data */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["models.Configuration"];
+                    "application/json": components["schemas"]["models.UpdatePasteRequest"];
                 };
             };
             responses: {
@@ -68,7 +84,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.ConfigResponse"];
+                        "application/json": components["schemas"]["models.PasteResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -77,7 +93,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.ConfigResponse"];
+                        "application/json": components["schemas"]["models.ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -86,34 +102,136 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.ConfigResponse"];
+                        "application/json": components["schemas"]["models.ErrorResponse"];
                     };
                 };
             };
         };
-        post?: never;
-        delete?: never;
+        /**
+         * Create paste
+         * @description Creates a new paste
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Paste data */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CreatePasteRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.PasteResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        /**
+         * Deletes paste by ID
+         * @description delete a paste by ID
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Paste ID */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.PasteResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/config/reset": {
+    "/paste/all": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
         /**
-         * Reset configuration
-         * @description Reset configuration to default values
+         * Lists out all the pastes
+         * @description Returns a list of all the pastes. # TODO: pagination
          */
-        post: {
+        get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Page number */
+                    page?: number;
+                    /** @description Items per page */
+                    limit?: number;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -126,7 +244,16 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.ConfigResponse"];
+                        "application/json": components["schemas"]["models.PasteListResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
                     };
                 };
                 /** @description Internal Server Error */
@@ -135,11 +262,73 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.ConfigResponse"];
+                        "application/json": components["schemas"]["models.ErrorResponse"];
                     };
                 };
             };
         };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/paste/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Gets a specific paste
+         * @description Retrieve a paste by ID
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Paste ID */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.PasteResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -394,244 +583,81 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description Configuration response wrapper */
-        "models.ConfigResponse": {
-            data?: components["schemas"]["models.Configuration"];
-            error?: string;
-        };
-        /** @description Complete application configuration settings */
-        "models.Configuration": {
-            /** @description App contains core application settings */
-            app?: {
-                /** @example http://localhost:8080 */
-                apiBaseURL: string;
-                /** @example http://localhost:3000 */
-                appURL: string;
-                /**
-                 * @example development
-                 * @enum {string}
-                 */
-                environment: "development" | "staging" | "production";
-                /**
-                 * @example info
-                 * @enum {string}
-                 */
-                logLevel: "debug" | "info" | "warn" | "error";
-                /** @example 100 */
-                maxPageSize: number;
-                /** @example Listarr */
-                name: string;
-            };
-            /** @description Auth contains authentication settings */
-            auth?: {
-                /** @example [
-                 *       "http://localhost:3000"
-                 *     ] */
-                allowedOrigins?: string[];
-                /** @example false */
-                enable2FA?: boolean;
-                /** @example true */
-                enableLocal?: boolean;
-                /** @example your-secret-key */
-                jwtSecret: string;
-                /** @example 60 */
-                sessionTimeout: number;
-                /** @example 24 */
-                tokenExpiration: number;
-            };
-            /** @description Database contains database connection settings */
-            database?: {
-                /** @example 20 */
-                maxConns: number;
-                /** @example 30 */
-                timeout: number;
-                /** @example postgres://localhost:5432/listarr */
-                url: string;
-            };
-            /** @description HTTP contains HTTP server configuration */
-            http?: {
-                /** @example false */
-                enableSSL?: boolean;
-                /** @example 60 */
-                idleTimeout: number;
-                /** @example 8080 */
-                port: string;
-                /** @example false */
-                proxyEnabled?: boolean;
-                /** @example http://proxy:8080 */
-                proxyURL?: string;
-                /** @example true */
-                rateLimitEnabled?: boolean;
-                /** @example 30 */
-                readTimeout: number;
-                /** @example 100 */
-                requestsPerMin?: number;
-                /** @example /path/to/cert.pem */
-                sslCert?: string;
-                /** @example /path/to/key.pem */
-                sslKey?: string;
-                /** @example 30 */
-                writeTimeout: number;
-            };
-            /** @description Integrations contains all third-party service configurations */
-            integrations?: {
-                emby?: components["schemas"]["models.EmbyConfig"];
-                jellyfin?: components["schemas"]["models.JellyfinConfig"];
-                navidrome?: components["schemas"]["models.NavidromeConfig"];
-                plex?: components["schemas"]["models.PlexConfig"];
-                spotify?: components["schemas"]["models.SpotifyConfig"];
-                trakt?: components["schemas"]["models.TraktConfig"];
-            };
-            /** @description SpotDL contains Spotify download integration settings */
-            spotdl?: {
-                /** @example 2 */
-                concurrentDownloads: number;
-                /** @example ./downloads */
-                downloadDirectory: string;
-                /** @example false */
-                enabled?: boolean;
-                /**
-                 * @example mp3
-                 * @enum {string}
-                 */
-                fileFormat: "mp3" | "flac";
-                /** @example 3 */
-                maxRetries: number;
-                /** @example {artist} - {title} */
-                namingTemplate: string;
-                /** @example true */
-                notifyOnComplete?: boolean;
-                /**
-                 * @example high
-                 * @enum {string}
-                 */
-                qualityPreset: "low" | "medium" | "high";
-            };
-            /** @description Sync contains synchronization settings */
-            sync?: {
-                collections?: {
-                    /** @example [
-                     *       "series",
-                     *       "movies",
-                     *       "music"
-                     *     ] */
-                    allowedTypes?: string[];
-                    /** @example true */
-                    enableSync?: boolean;
-                    /** @example 5000 */
-                    maxItems: number;
-                    /** @example 0 *\/12 * * * */
-                    syncInterval?: string;
-                };
-                /**
-                 * @example skip
-                 * @enum {string}
-                 */
-                conflictStrategy: "overwrite" | "skip" | "merge";
-                /** @example true */
-                enabled?: boolean;
-                /** @example 0 *\/12 * * * */
-                interval: string;
-                playlists?: {
-                    /** @example [
-                     *       "music",
-                     *       "media"
-                     *     ] */
-                    allowedTypes?: string[];
-                    /** @example true */
-                    enableSync?: boolean;
-                    /** @example 1000 */
-                    maxItems: number;
-                    /** @example 0 *\/6 * * * */
-                    syncInterval?: string;
-                };
-            };
-        };
-        /** @description Emby media server configuration */
-        "models.EmbyConfig": {
-            /** @example your-api-key */
-            apiKey?: string;
-            /** @example false */
-            enabled?: boolean;
-            /** @example localhost */
-            host?: string;
-            /** @example 8096 */
-            port?: number;
-            /** @example false */
-            ssl?: boolean;
-            /** @example admin */
-            username?: string;
+        "models.CreatePasteRequest": {
+            content: string;
+            /** @example 2023-01-08T00:00:00Z */
+            expires_at?: string;
+            /** @enum {string} */
+            privacy: "public" | "private" | "password";
+            syntax_highlight?: string;
+            title: string;
         };
         "models.ErrorResponse": {
-            /** @example error message */
+            details?: {
+                [key: string]: unknown;
+            };
+            /** @example FAILED_CHECK */
+            error?: components["schemas"]["models.ErrorType"];
+            /** @example This is a pretty message */
+            message?: string;
+        };
+        /** @enum {string} */
+        "models.ErrorType": "FAILED_CHECK" | "UNAUTHORIZED" | "NOT_FOUND" | "BAD_REQUEST" | "INTERNAL_ERROR";
+        "models.HealthResponse": {
+            /** @example true */
+            application: boolean;
+            /** @example true */
+            database: boolean;
+            /**
+             * @description Overall status of the system
+             * @example up
+             * @enum {string}
+             */
+            status: "up" | "down" | "degraded";
+        };
+        /** @description A text snippet with formatting, expiration, and privacy settings */
+        "models.Paste": {
+            /** @example console.log('Hello world'); */
+            content: string;
+            /** @example 2023-01-01T00:00:00Z */
+            created_at?: string;
+            /** @example 2023-01-08T00:00:00Z */
+            expires_at?: string;
+            /** @example 123111 */
+            id: number;
+            /**
+             * @description "public", "private", "password"
+             * @example public
+             * @enum {string}
+             */
+            privacy: "public" | "private" | "password";
+            /** @example javascript */
+            syntax_highlight: string;
+            /** @example My Code Snippet */
+            title: string;
+            /** @example u98765zyxwv */
+            user_id?: string;
+        };
+        /** @description List of pastes response wrapper */
+        "models.PasteListResponse": {
+            count?: number;
+            data?: components["schemas"]["models.Paste"][];
             error?: string;
         };
-        /** @description Jellyfin media server configuration */
-        "models.JellyfinConfig": {
-            /** @example your-api-key */
-            apiKey?: string;
-            /** @example false */
-            enabled?: boolean;
-            /** @example localhost */
-            host?: string;
-            /** @example 8096 */
-            port?: number;
-            /** @example false */
-            ssl?: boolean;
-            /** @example admin */
-            username?: string;
+        /** @description Paste response wrapper */
+        "models.PasteResponse": {
+            data?: components["schemas"]["models.Paste"];
+            error?: string;
         };
-        /** @description Navidrome music server configuration */
-        "models.NavidromeConfig": {
-            /** @example false */
-            enabled?: boolean;
-            /** @example localhost */
-            host?: string;
-            /** @example your-password */
-            password?: string;
-            /** @example 4533 */
-            port?: number;
-            /** @example false */
-            ssl?: boolean;
-            /** @example admin */
-            username?: string;
-        };
-        /** @description Plex media server configuration */
-        "models.PlexConfig": {
-            /** @example false */
-            enabled?: boolean;
-            /** @example localhost */
-            host?: string;
-            /** @example 32400 */
-            port?: number;
-            /** @example false */
-            ssl?: boolean;
-            /** @example your-plex-token */
-            token?: string;
-        };
-        /** @description Spotify configuration */
-        "models.SpotifyConfig": {
-            /** @example your-client-id */
-            clientId?: string;
-            /** @example your-client-secret */
-            clientSecret?: string;
-            /** @example false */
-            enabled?: boolean;
-            /** @example http://localhost:8080/callback */
-            redirectUri?: string;
-            /** @example user-library-read playlist-read-private */
-            scopes?: string;
-        };
-        /** @description Trakt.tv configuration */
-        "models.TraktConfig": {
-            /** @example your-client-id */
-            clientId?: string;
-            /** @example your-client-secret */
-            clientSecret?: string;
-            /** @example false */
-            enabled?: boolean;
-            /** @example http://localhost:8080/callback */
-            redirectUri?: string;
+        "models.UpdatePasteRequest": {
+            content: string;
+            /** @example 2023-01-08T00:00:00Z */
+            expires_at?: string;
+            id: number;
+            /** @enum {string} */
+            privacy: "public" | "private" | "password";
+            syntax_highlight?: string;
+            title: string;
         };
         "models.User": {
             /** @example john@example.com */

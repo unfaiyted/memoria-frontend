@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { TableHandler } from '@vincjo/datatables';
-	import Search from '$lib/components/Search.svelte';
-	import RowsPerPage from '$lib/components/RowsPerPage.svelte';
-	import RowCount from '$lib/components/RowCount.svelte';
-	import Pagination from '$lib/components/Pagination.svelte';
-	import ThFilter from '$lib/components/ThFilter.svelte';
-	import ThSort from '$lib/components/ThSort.svelte';
+	import Search from '$lib/components/tables/Search.svelte';
+	import RowsPerPage from '$lib/components/tables/RowsPerPage.svelte';
+	import RowCount from '$lib/components/tables/RowCount.svelte';
+	import Pagination from '$lib/components/tables/Pagination.svelte';
+	import ThFilter from '$lib/components/tables/ThFilter.svelte';
+	import ThSort from '$lib/components/tables/ThSort.svelte';
 	import type { UserResponse } from '$lib/api/types';
 	//Load local data
 	// import data from '$lib/data/data';
