@@ -37,17 +37,26 @@
 <!-- <section bind:this={element} class="bg-surface-200-700-token min-h-[200px]"></section> -->
 
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 	import { Editor } from '@tiptap/core';
 	import StarterKit from '@tiptap/starter-kit';
 	import { BubbleMenu } from '@tiptap/extension-bubble-menu';
 	import { FloatingMenu } from '@tiptap/extension-floating-menu';
 
+	export let value = '';
+	export let autofocus = true;
+
+	const dispatch = createEventDispatcher();
 	let editor: Editor | null = null;
 	let editorElement: HTMLDivElement;
 	let bubbleMenuElement: HTMLDivElement;
 	let floatingMenuElement: HTMLDivElement;
 	let isFirstActivation = true;
+	let isUpdatingFromProps = false;
+
+	async function handleClear() {
+		value = '';
+	}
 
 	async function handlePaste() {
 		if (!editor) return;
@@ -65,6 +74,7 @@
 	onMount(() => {
 		editor = new Editor({
 			element: editorElement,
+			autofocus: autofocus,
 			extensions: [
 				StarterKit,
 				BubbleMenu.configure({
@@ -76,7 +86,9 @@
 					tippyOptions: { duration: 100 }
 				})
 			],
-			content: `
+			content:
+				value ||
+				`
 				<p class="flex h-screen">
 				 <div class="m-auto">Type or Paste here</div>
 				</p>
@@ -87,6 +99,16 @@
 					editor.commands.setContent('<p></p>');
 					isFirstActivation = false;
 				}
+			},
+			onUpdate: ({ editor }) => {
+				if (isUpdatingFromProps) return;
+				const newContent = editor.getHTML();
+				value = newContent;
+				dispatch('update', newContent);
+			},
+			onCreate: ({ editor }) => {
+				dispatch('ready', { editor });
+				editor.commands.focus();
 			}
 		});
 	});
@@ -96,6 +118,12 @@
 			editor.destroy();
 		}
 	});
+
+	$: if (editor && value !== editor.getHTML()) {
+		isUpdatingFromProps = true;
+		// editor.commands.setContent(value);
+		isUpdatingFromProps = false;
+	}
 
 	$: isBoldActive = editor?.isActive('bold') ?? false;
 	$: isItalicActive = editor?.isActive('italic') ?? false;
@@ -252,7 +280,7 @@
 </div>
 <!-- {/if} -->
 
-<div bind:this={editorElement} class="bg-surface-200-700-token"></div>
+<div bind:this={editorElement} class="min-h-[200px] bg-surface-200-700-token"></div>
 
 <style>
 </style>

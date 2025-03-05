@@ -69,6 +69,7 @@
 
 			// Create paste using the store
 			const result = await pastesStore.createPaste(pasteData);
+			console.log('result', result);
 
 			if (result) {
 				toastStore.trigger({
@@ -94,9 +95,50 @@
 </svelte:head>
 
 <div class="container mx-auto p-6 max-w-4xl overflow-y">
-	<h1 class="h1 pb-6">Create New Paste</h1>
+	<h2 class="h2 pb-4">Create New Paste</h2>
 
 	<form on:submit|preventDefault={handleSubmit} class="space-y-6">
+		<!-- Content Editor -->
+		<div>
+			<div class="flex justify-between items-center mb-1">
+				<div class="flex space-x-2">
+					<!-- Buttons could be added here -->
+				</div>
+			</div>
+
+			<div class="card">
+				<!-- Editor with content binding -->
+				<header class="pt-4 pl-4 mb-4">
+					<div class="flex justify-between">
+						<div>Press <kbd class="kbd">⌘ + V</kbd> to paste.</div>
+						<div class="pr-4">
+							<button class="chip variant-soft hover:variant-filled">
+								<span
+									><svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="1em"
+										height="1em"
+										viewBox="0 0 24 24"
+										{...$$props}
+										><!-- Icon from All by undefined - undefined --><path
+											fill="currentColor"
+											d="M7 19q-.825 0-1.412-.587T5 17q0-.375.15-.737t.45-.663l10-10q.3-.3.663-.45T17 5q.825 0 1.413.587T19 7q0 .375-.137.75t-.438.675l-10 10q-.3.3-.663.438T7 19"
+										/></svg
+									></span
+								>
+								<span>Clear</span>
+							</button>
+						</div>
+					</div>
+				</header>
+				<div class="p-2 bg-surface-200-700-token">
+					<Editor bind:value={content} />
+				</div>
+				<footer class="card-footer border-t-2 pt-3 border-surface-700">
+					<em class="text-xs">Editor can handle code and color coding</em>
+				</footer>
+			</div>
+		</div>
 		<!-- Title and Expiration on same line -->
 		<div class="flex flex-wrap gap-4">
 			<!-- Title Input -->
@@ -122,25 +164,6 @@
 				</select>
 			</div>
 		</div>
-
-		<!-- Content Editor -->
-		<div>
-			<div class="flex justify-between items-center mb-1">
-				<div class="flex space-x-2">
-					<!-- Buttons could be added here -->
-				</div>
-			</div>
-
-			<div class="card">
-				<!-- Editor with content binding -->
-				<header class="pt-4 pl-4 mb-2"><h3 class="h3">Paste Content Below</h3></header>
-				<div class="p-2 bg-surface-200-700-token"><Editor bind:value={content} /></div>
-				<footer class="card-footer border-t-2 border-surface-700">
-					<em class="text-xs">Editor can handle code and color coding</em>
-				</footer>
-			</div>
-		</div>
-
 		<!-- Password Protection and Privacy on same line -->
 		<div class="flex flex-wrap gap-4 items-center">
 			<!-- Password Protection -->

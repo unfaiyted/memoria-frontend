@@ -1,19 +1,10 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "API Server for Memoria application",
-    "title": "Memoria API",
-    "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "name": "API Support",
-      "url": "http://www.swagger.io/support",
-      "email": "support@swagger.io"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    },
-    "version": "1.0"
+    "description": "",
+    "title": "",
+    "contact": {},
+    "version": ""
   },
   "paths": {
     "/health": {
@@ -67,17 +58,27 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success response with paste data",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.PasteResponse"
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteData"
                 }
               }
             }
           },
           "400": {
             "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paste not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -117,11 +118,11 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success response with paste data",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.PasteResponse"
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteData"
                 }
               }
             }
@@ -171,17 +172,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.PasteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/models.ErrorResponse"
+                  "$ref": "#/components/schemas/models.APIResponse-uint64"
                 }
               }
             }
@@ -238,11 +229,11 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success response with paste list data",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.PasteListResponse"
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteListData"
                 }
               }
             }
@@ -290,17 +281,27 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success response with paste data",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/models.PasteResponse"
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteData"
                 }
               }
             }
           },
           "400": {
             "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paste not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -557,11 +558,6 @@
       }
     }
   },
-  "servers": [
-    {
-      "url": "http://localhost:8080/api/v1"
-    }
-  ],
   "components": {
     "requestBodies": {
       "models.User": {
@@ -577,6 +573,54 @@
       }
     },
     "schemas": {
+      "models.APIResponse-models_PasteData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/models.PasteData"
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation successful"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "models.APIResponse-models_PasteListData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/models.PasteListData"
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation successful"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "models.APIResponse-uint64": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation successful"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
       "models.CreatePasteRequest": {
         "type": "object",
         "required": [
@@ -626,6 +670,12 @@
           "message": {
             "type": "string",
             "example": "This is a pretty message"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
           }
         }
       },
@@ -636,14 +686,28 @@
           "UNAUTHORIZED",
           "NOT_FOUND",
           "BAD_REQUEST",
-          "INTERNAL_ERROR"
+          "INTERNAL_ERROR",
+          "FORBIDDEN",
+          "CONFLICT",
+          "VALIDATION_ERROR",
+          "RATE_LIMITED",
+          "TIMEOUT",
+          "SERVICE_UNAVAILABLE",
+          "UNPROCESSABLE_ENTITY"
         ],
         "x-enum-varnames": [
           "ErrorTypeFailedCheck",
           "ErrorTypeUnauthorized",
           "ErrorTypeNotFound",
           "ErrorTypeBadRequest",
-          "ErrorTypeInternalError"
+          "ErrorTypeInternalError",
+          "ErrorTypeForbidden",
+          "ErrorTypeConflict",
+          "ErrorTypeValidation",
+          "ErrorTypeRateLimited",
+          "ErrorTypeTimeout",
+          "ErrorTypeServiceUnavailable",
+          "ErrorTypeUnprocessableEntity"
         ]
       },
       "models.HealthResponse": {
@@ -725,33 +789,26 @@
           }
         }
       },
-      "models.PasteListResponse": {
+      "models.PasteData": {
+        "type": "object",
+        "properties": {
+          "paste": {
+            "$ref": "#/components/schemas/models.Paste"
+          }
+        }
+      },
+      "models.PasteListData": {
         "description": "List of pastes response wrapper",
         "type": "object",
         "properties": {
           "count": {
             "type": "integer"
           },
-          "data": {
+          "pastes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/models.Paste"
             }
-          },
-          "error": {
-            "type": "string"
-          }
-        }
-      },
-      "models.PasteResponse": {
-        "description": "Paste response wrapper",
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/models.Paste"
-          },
-          "error": {
-            "type": "string"
           }
         }
       },

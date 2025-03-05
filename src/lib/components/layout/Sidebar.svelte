@@ -1,94 +1,144 @@
-<script>
-	import { tweened } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
+<script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { createEventDispatcher } from 'svelte';
+	import { type PopupSettings } from '@skeletonlabs/skeleton';
+	import { onMount } from 'svelte';
+	import { pastesStore, pastes as pastesData, pastesLoading } from '$lib/stores/pastes';
+	import PasteGroup from '$lib/components/layout/sidebar/PasteGroup.svelte';
+	import { browser } from '$app/environment';
+	import type { components } from '$lib/api/v1';
 
-	const dispatch = createEventDispatcher();
+	type Paste = components['schemas']['models.Paste'];
 
 	// Props with defaults
-	export let isOpen = true;
-	export let title = 'Memoria';
 
-	// Create a tweened store for smooth width animation
-	const width = tweened(isOpen ? 16 : 4, {
-		duration: 300,
-		easing: cubicOut
+	let { isOpen = $bindable(true), title = 'Memoria', onToggle } = $props();
+
+	// State variables
+	let windowWidth = $state(browser ? window.innerWidth : 1024);
+	let searchQuery = $state('');
+	let width = $state(isOpen ? 16 : 4); // Current width in rem
+	let targetWidth = $state(isOpen ? 16 : 4); // Target width to animate to
+	let animating = $state(false);
+
+	// Derived state
+	let filteredPastes = $derived(
+		$pastesData.filter((paste) => paste.title.toLowerCase().includes(searchQuery.toLowerCase()))
+	);
+
+	// Constants
+	const SMALL_SCREEN_BREAKPOINT = 768;
+	const ANIMATION_DURATION = 300; // ms
+
+	$effect(() => {
+		// Update target width when isOpen changes
+		targetWidth = isOpen ? 16 : 4;
+
+		if (!animating && width !== targetWidth) {
+			animateWidth();
+		}
 	});
 
-	// Update width when isOpen changes
-	$: width.set(isOpen ? 16 : 4);
+	// Custom animation function using requestAnimationFrame
+	function animateWidth() {
+		if (!browser) return;
+
+		animating = true;
+		const startTime = performance.now();
+		const startWidth = width;
+		const widthDiff = targetWidth - startWidth;
+
+		function step(currentTime: number) {
+			const elapsed = currentTime - startTime;
+			const progress = Math.min(elapsed / ANIMATION_DURATION, 1);
+
+			// Cubic easing function (similar to cubicOut)
+			const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+			// Update width with eased value
+			width = startWidth + widthDiff * easedProgress;
+
+			if (progress < 1) {
+				requestAnimationFrame(step);
+			} else {
+				width = targetWidth; // Ensure we land exactly on target
+				animating = false;
+			}
+		}
+
+		requestAnimationFrame(step);
+	}
 
 	// Toggle sidebar function
 	function toggleSidebar() {
 		isOpen = !isOpen;
-		dispatch('toggle', { isOpen });
+		onToggle?.({ isOpen });
 	}
 
-	// Mock data for paste history - this would come from your API in a real app
-	let pastes = [
-		{ id: 1, name: 'React Component', content: '...', created: new Date() },
-		{ id: 2, name: 'SQL Query', content: '...', created: new Date(Date.now() - 1000 * 60 * 60) },
-		{
-			id: 3,
-			name: 'Python Script',
-			content: '...',
-			created: new Date(Date.now() - 1000 * 60 * 60 * 3)
-		},
-		{
-			id: 4,
-			name: 'CSS Animation',
-			content: '...',
-			created: new Date(Date.now() - 1000 * 60 * 60 * 24)
-		},
-		{
-			id: 5,
-			name: 'Node.js Server',
-			content: '...',
-			created: new Date(Date.now() - 1000 * 60 * 60 * 25)
-		},
-		{
-			id: 6,
-			name: 'API Endpoints',
-			content: '...',
-			created: new Date(Date.now() - 1000 * 60 * 60 * 48)
-		},
-		{
-			id: 7,
-			name: 'Vue Component',
-			content: '...',
-			created: new Date(Date.now() - 1000 * 60 * 60 * 72)
-		}
-	];
+	// Handler for paste clicks
+	interface GroupedPastes {
+		today: Paste[];
+		yesterday: Paste[];
+		older: Paste[];
+	}
 
-	// Search functionality
-	let searchQuery = '';
-	$: filteredPastes = pastes.filter((paste) =>
-		paste.name.toLowerCase().includes(searchQuery.toLowerCase())
-	);
-
-	// Group pastes by time period
-	$: groupedPastes = groupPastesByDate(filteredPastes);
-
-	function groupPastesByDate(pasteList) {
+	// Group pastes by date
+	function groupPastesByDate(pasteList: Paste[]): GroupedPastes {
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 
 		const yesterday = new Date(today);
 		yesterday.setDate(yesterday.getDate() - 1);
 
+		// Helper function to sort pastes by created_at in descending order
+		const sortByDateDesc = (a: Paste, b: Paste) => {
+			return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+		};
+
 		return {
-			today: pasteList.filter((paste) => paste.created >= today),
-			yesterday: pasteList.filter((paste) => paste.created >= yesterday && paste.created < today),
-			older: pasteList.filter((paste) => paste.created < yesterday)
+			today: pasteList.filter((paste) => new Date(paste.created_at) >= today).sort(sortByDateDesc),
+			yesterday: pasteList
+				.filter(
+					(paste) => new Date(paste.created_at) >= yesterday && new Date(paste.created_at) < today
+				)
+				.sort(sortByDateDesc),
+			older: pasteList
+				.filter((paste) => new Date(paste.created_at) < yesterday)
+				.sort(sortByDateDesc)
 		};
 	}
+
+	let groupedPastes = $derived(groupPastesByDate(filteredPastes));
+
+	function handlePasteClick() {
+		if (windowWidth < SMALL_SCREEN_BREAKPOINT) {
+			isOpen = false;
+			onToggle?.({ isOpen });
+		}
+	}
+
+	// Setup code
+	onMount(() => {
+		pastesStore.fetchAllPastes();
+
+		// Add window resize listener
+		if (browser) {
+			const handleResize = () => {
+				windowWidth = window.innerWidth;
+			};
+
+			window.addEventListener('resize', handleResize);
+
+			return () => {
+				window.removeEventListener('resize', handleResize);
+			};
+		}
+	});
 </script>
 
 <aside
 	class="sidebar fixed top-0 left-0 h-screen overflow-hidden
-  border-r-2 border-surface-600 bg-surface-900 shadow-sm"
-	style="width: {$width}rem"
+    border-r-2 border-surface-600 bg-surface-900 shadow-sm mr-10"
+	style="width: {width}rem"
 >
 	<div class="flex h-full flex-col" style="padding: {isOpen ? '1.5rem' : '0.5rem'};">
 		<!-- Toggle Button -->
@@ -96,7 +146,7 @@
 			class="absolute top-4 {isOpen
 				? 'right-4'
 				: 'right-4'} z-10 rounded-full p-1 bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-all"
-			on:click={toggleSidebar}
+			onclick={toggleSidebar}
 			aria-label={isOpen ? 'Close Sidebar' : 'Open Sidebar'}
 		>
 			<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,7 +214,7 @@
 					</div>
 				</div>
 			{:else}
-				<button class="flex justify-center mb-4 w-full">
+				<button class="flex justify-center mb-4 w-full" aria-label="Search">
 					<svg class="h-5 w-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
@@ -178,152 +228,52 @@
 		</div>
 
 		<!-- Paste History -->
-		<div class="flex-1 overflow-y-auto min-h-0">
-			<!-- Today -->
-			{#if groupedPastes.today.length > 0}
-				<div class="mb-4">
+		<div class="flex-1 overflow-y-auto min-h-0 w-[112%]">
+			{#if $pastesLoading}
+				<div class="text-center py-4">
 					{#if isOpen}
-						<h2
-							class="text-xs font-semibold uppercase tracking-wider mb-2"
-							transition:fade={{ duration: 200 }}
-						>
-							Today
-						</h2>
+						<p transition:fade={{ duration: 200 }}>Loading pastes...</p>
+					{:else}
+						<div class="flex justify-center">
+							<svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+								<circle
+									class="opacity-25"
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									stroke-width="4"
+									fill="none"
+								></circle>
+								<path
+									class="opacity-75"
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+								></path>
+							</svg>
+						</div>
 					{/if}
-					<ul class="space-y-1">
-						{#each groupedPastes.today as paste (paste.id)}
-							<li>
-								<a
-									href={`/paste/${paste.id}`}
-									class="flex items-center rounded-md px-3 py-2 hover:bg-indigo-50 hover:text-indigo-600 {isOpen
-										? 'space-x-3'
-										: 'justify-center'}"
-								>
-									<svg
-										class="h-5 w-5 flex-shrink-0"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-										></path>
-									</svg>
-									{#if isOpen}
-										<span
-											transition:fade={{ duration: 200 }}
-											class="whitespace-nowrap overflow-hidden text-ellipsis">{paste.name}</span
-										>
-									{/if}
-								</a>
-							</li>
-						{/each}
-					</ul>
 				</div>
-			{/if}
+			{:else}
+				<div class="max-w-[210px]">
+					<!-- Today -->
+					<PasteGroup pastes={groupedPastes.today} groupTitle="Today" {isOpen} variant="primary" />
 
-			<!-- Yesterday -->
-			{#if groupedPastes.yesterday.length > 0}
-				<div class="mb-4">
-					{#if isOpen}
-						<h2
-							class="text-xs font-semibold uppercase tracking-wider mb-2"
-							transition:fade={{ duration: 200 }}
-						>
-							Yesterday
-						</h2>
-					{/if}
-					<ul class="space-y-1">
-						{#each groupedPastes.yesterday as paste (paste.id)}
-							<li>
-								<a
-									href={`/paste/${paste.id}`}
-									class="flex items-center rounded-md px-3 py-2 hover:bg-indigo-50 hover:text-indigo-600 {isOpen
-										? 'space-x-3'
-										: 'justify-center'}"
-								>
-									<svg
-										class="h-5 w-5 flex-shrink-0"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-										></path>
-									</svg>
-									{#if isOpen}
-										<span
-											transition:fade={{ duration: 200 }}
-											class="whitespace-nowrap overflow-hidden text-ellipsis">{paste.name}</span
-										>
-									{/if}
-								</a>
-							</li>
-						{/each}
-					</ul>
-				</div>
-			{/if}
+					<!-- Yesterday -->
+					<PasteGroup pastes={groupedPastes.yesterday} groupTitle="Yesterday" {isOpen} />
 
-			<!-- Older -->
-			{#if groupedPastes.older.length > 0}
-				<div class="mb-4">
-					{#if isOpen}
-						<h2
-							class="text-xs font-semibold uppercase tracking-wider mb-2"
-							transition:fade={{ duration: 200 }}
-						>
-							Older
-						</h2>
-					{/if}
-					<ul class="space-y-1">
-						{#each groupedPastes.older as paste (paste.id)}
-							<li>
-								<a
-									href={`/paste/${paste.id}`}
-									class="flex items-center rounded-md px-3 py-2 hover:bg-indigo-50 hover:text-indigo-600 {isOpen
-										? 'space-x-3'
-										: 'justify-center'}"
-								>
-									<svg
-										class="h-5 w-5 flex-shrink-0"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-										></path>
-									</svg>
-									{#if isOpen}
-										<span
-											transition:fade={{ duration: 200 }}
-											class="whitespace-nowrap overflow-hidden text-ellipsis">{paste.name}</span
-										>
-									{/if}
-								</a>
-							</li>
-						{/each}
-					</ul>
+					<!-- Older -->
+					<PasteGroup pastes={groupedPastes.older} groupTitle="Older" {isOpen} />
 				</div>
-			{/if}
 
-			<!-- No results message -->
-			{#if filteredPastes.length === 0}
-				<div class="text-center py-4 text-zinc-500 text-sm">
-					{#if isOpen}
-						<p transition:fade={{ duration: 200 }}>No pastes found</p>
-					{/if}
-				</div>
+				<!-- No results message -->
+				{#if filteredPastes.length === 0 && !$pastesLoading}
+					<div class="text-center py-4 text-zinc-500 text-sm">
+						{#if isOpen}
+							<p transition:fade={{ duration: 200 }}>No pastes found</p>
+						{/if}
+					</div>
+				{/if}
 			{/if}
 		</div>
 
@@ -332,7 +282,7 @@
 			<a
 				href="/new"
 				class="flex items-center justify-center py-2 px-4 bg-indigo-600
-        hover:bg-indigo-700 rounded-md text-white {isOpen ? '' : 'w-full'}"
+          hover:bg-indigo-700 rounded-md text-white {isOpen ? '' : 'w-full'}"
 			>
 				<svg
 					class="h-5 w-5 {isOpen ? 'mr-2' : ''}"
@@ -350,10 +300,27 @@
 		</div>
 	</div>
 </aside>
+{#if !isOpen}
+	<div class="sidebar-spacer" style="width: {width}rem;"></div>
+{/if}
 
 <style>
 	.sidebar {
-		transition: width 300ms cubic-bezier(0.22, 1, 0.36, 1);
+		/* transition: width 300ms cubic-bezier(0.22, 1, 0.36, 1); */
 		z-index: 50;
+	}
+	/* Add these styles to fix popup positioning */
+	:global([data-popup^='paste-']) {
+		z-index: 100 !important; /* Higher than sidebar z-index */
+		position: fixed !important; /* This ensures it's positioned relative to viewport */
+		transform: translateX(0) !important; /* Ensure proper horizontal positioning */
+	}
+
+	:global([data-popup^='paste-'] .arrow) {
+		left: -5px !important; /* Adjust arrow to point correctly */
+	}
+	.sidebar-spacer {
+		height: 100vh;
+		float: left;
 	}
 </style>

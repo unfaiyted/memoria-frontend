@@ -1,29 +1,49 @@
-<script>
+<script lang="ts">
 	import { getToastStore } from '@skeletonlabs/skeleton';
-
-	import { page } from '$app/stores';
-
-	// Access the ID from the URL parameter
-	$: id = $page.params.id;
-	// Paste data (would come from your route)
-	export let pasteContent = 'This is a sample paste content';
-	export let expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // Example: 7 days from now
-	export let creator = null; // Creator username if available
-	export let isOwner = false; // Whether current user owns this paste
-	export let isLoggedIn = false; // Whether user is logged in
+	import { page } from '$app/stores'; // TODO: Replace with non-deprecated alternative when upgrading
+	import { pastesStore, currentPaste, pastesLoading, pastesError } from '$lib/stores/pastes';
+	import { goto } from '$app/navigation';
+	import { Render } from 'svelte-purify';
+	import { Render as RenderOnClient } from 'svelte-purify/browser-only';
+	// Access the ID from the URL parameter with proper type checking
+	$: id = $page.params.id ? parseInt($page.params.id, 10) : null;
 
 	// Toast store for notifications
 	const toastStore = getToastStore();
 
-	// Copy paste content to clipboard
-	async function copyToClipboard() {
+	// Auth state (would come from auth store in a real implementation)
+	let isLoggedIn = false; // TODO: Replace with actual auth store
+	$: isOwner = $currentPaste?.user_id === 'current-user-id'; // TODO: Replace with actual user ID check
+
+	// Load the paste data when component mounts or ID changes
+	$: if (id !== null) {
+		loadPaste(id);
+	}
+
+	async function loadPaste(pasteId: number): Promise<void> {
 		try {
-			await navigator.clipboard.writeText(pasteContent);
+			console.log('loading', pasteId);
+			await pastesStore.fetchPaste(pasteId);
+		} catch (err: unknown) {
+			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+			toastStore.trigger({
+				message: 'Failed to load paste: ' + errorMessage,
+				background: 'variant-filled-error'
+			});
+		}
+	}
+
+	// Copy paste content to clipboard
+	async function copyToClipboard(): Promise<void> {
+		if (!$currentPaste) return;
+
+		try {
+			await navigator.clipboard.writeText($currentPaste.content);
 			toastStore.trigger({
 				message: 'Copied to clipboard!',
 				background: 'variant-filled-success'
 			});
-		} catch (err) {
+		} catch (err: unknown) {
 			console.error('Failed to copy: ', err);
 			toastStore.trigger({
 				message: 'Failed to copy to clipboard',
@@ -32,68 +52,152 @@
 		}
 	}
 
-	// Delete the paste (would call your API)
-	function deletePaste() {
+	// Delete the paste using the store
+	async function deletePaste(): Promise<void> {
+		if (!$currentPaste) return;
+
 		if (confirm('Are you sure you want to delete this paste? This action cannot be undone.')) {
-			// API call would go here
-			toastStore.trigger({
-				message: 'Paste deleted successfully',
-				background: 'variant-filled-success'
-			});
-			// Redirect would happen here
+			try {
+				await pastesStore.deletePaste($currentPaste.id);
+				toastStore.trigger({
+					message: 'Paste deleted successfully',
+					background: 'variant-filled-success'
+				});
+				// Redirect to home page after deletion
+				goto('/');
+			} catch (err: unknown) {
+				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+				toastStore.trigger({
+					message: 'Failed to delete paste: ' + errorMessage,
+					background: 'variant-filled-error'
+				});
+			}
 		}
 	}
 </script>
 
-<div class="container mx-auto p-4 space-y-8">
-	<header class="text-center space-y-2">
-		<h1 class="h1">Paste Viewer</h1>
-		<p class="text-surface-500-400-token">View and manage your paste</p>
+<div class="container mx-auto p-6 max-w-5xl">
+	<!-- Breadcrumbs navigation -->
+	<nav class="breadcrumb mb-4">
+		<ol class="flex items-center space-x-2 text-sm">
+			<li><a href="/" class="anchor hover:underline">Home</a></li>
+			<li class="text-surface-500-400-token">•</li>
+			<li>Paste {id}</li>
+		</ol>
+	</nav>
+
+	<header class="text-center mb-8">
+		<h1 class="h1 font-bold">Paste Viewer</h1>
+		<p class="text-surface-500-400-token">View and manage shared content</p>
 	</header>
 
-	<div class="card variant-filled-surface p-4">
-		<header
-			class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4"
-		>
-			<div class="space-y-2">
-				<div class="flex items-center gap-2">
-					<span class="badge variant-soft">Creator</span>
-					<span class="font-semibold">{creator || 'Anonymous'}</span>
+	{#if $pastesLoading}
+		<div class="card variant-soft p-8 flex justify-center items-center h-64">
+			<div class="flex flex-col items-center gap-4">
+				<div class="loader h-12 w-12"></div>
+				<p>Loading paste content...</p>
+			</div>
+		</div>
+	{:else if $pastesError}
+		<div class="card variant-filled-error p-6">
+			<div class="flex gap-4 items-start">
+				<span class="text-3xl">⚠️</span>
+				<div>
+					<h3 class="h3 font-bold">Error Loading Paste</h3>
+					<p>{$pastesError instanceof Error ? $pastesError.message : 'Unknown error'}</p>
+					<button class="btn variant-soft mt-4" on:click={() => loadPaste(id || 0)}
+						>Try Again</button
+					>
+				</div>
+			</div>
+		</div>
+	{:else if $currentPaste}
+		<div class="card variant-filled-surface shadow-xl">
+			<!-- Card Header with metadata -->
+			<header class="card-header p-6 flex flex-col sm:flex-row justify-between gap-4">
+				<div class="space-y-4 flex-1">
+					<h2 class="h2 font-bold">{$currentPaste.title}</h2>
+
+					<div class="flex flex-wrap gap-3">
+						<div class="chip variant-soft-primary">
+							<span>Creator: {$currentPaste.user_id || 'Anonymous'}</span>
+						</div>
+
+						{#if $currentPaste.expires_at}
+							<div class="chip variant-soft-warning">
+								<span>Expires: {new Date($currentPaste.expires_at).toLocaleString()}</span>
+							</div>
+						{/if}
+
+						{#if $currentPaste.created_at}
+							<div class="chip variant-soft-primary">
+								<span>Created: {new Date($currentPaste.created_at).toLocaleString()}</span>
+							</div>
+						{/if}
+
+						<!-- {#if $currentPaste.syntax_highlight} -->
+						<!-- 	<div class="chip variant-soft-tertiary"> -->
+						<!-- 		<span>Syntax: {$currentPaste.syntax_highlight}</span> -->
+						<!-- 	</div> -->
+						<!-- {/if} -->
+					</div>
 				</div>
 
-				{#if expirationDate}
-					<div class="flex items-center gap-2">
-						<span class="badge variant-soft">Expires</span>
-						<span>{new Date(expirationDate).toLocaleString()}</span>
-					</div>
-				{/if}
-			</div>
-
-			<div class="flex gap-2">
-				<button class="btn variant-filled-primary" on:click={copyToClipboard} aria-label="Copy">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="1em"
-						height="1em"
-						viewBox="0 0 256 256"
-						{...$$props}
-						><path
-							fill="#fff"
-							d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8m-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"
-						/></svg
-					>
-				</button>
-
-				{#if isLoggedIn && isOwner}
-					<button class="btn variant-filled-error" on:click={deletePaste}>
-						<span class="material-sympbols-outlined mr-2">delete</span>
-						Delete
+				<div class="flex flex-wrap gap-2 self-end sm:self-auto">
+					<button class="btn variant-filled-primary" on:click={copyToClipboard}>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="1em"
+							height="1em"
+							viewBox="0 0 256 256"
+							class="mr-2"
+						>
+							<path
+								fill="currentColor"
+								d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8m-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"
+							/>
+						</svg>
+						Copy
 					</button>
-				{/if}
-			</div>
-		</header>
 
-		<div class="card variant-ghost p-4"></div>
-		<pre class="whitespace-pre-wrap break-words">{pasteContent}</pre>
-	</div>
+					{#if isLoggedIn && isOwner}
+						<button class="btn variant-filled-error" on:click={deletePaste}>
+							<span class="material-symbols-outlined mr-2">delete</span>
+							Delete
+						</button>
+					{/if}
+				</div>
+			</header>
+
+			<hr class="opacity-50" />
+
+			<!-- Content display, with HTML parsing or code block depending on type -->
+			<div class="p-0">
+				<!-- {#if $currentPaste.syntax_highlight} -->
+				<!-- 	<div class="card p-0 variant-ghost rounded-none"> -->
+				<!-- 		<pre -->
+				<!-- 			class="whitespace-pre-wrap overflow-x-auto p-6 text-sm font-mono">{$currentPaste.content}</pre> -->
+				<!-- 	</div> -->
+				<!-- {:else} -->
+				<!-- For regular content that might contain HTML -->
+				<div class="card p-6 variant-ghost rounded-none">
+					<div class="prose dark:prose-invert max-w-none">
+						<Render html={$currentPaste.content} />
+					</div>
+				</div>
+				<!-- {/if} -->
+			</div>
+		</div>
+	{:else}
+		<div class="card variant-filled-warning p-6">
+			<div class="flex gap-4 items-start">
+				<span class="text-3xl">🔍</span>
+				<div>
+					<h3 class="h3 font-bold">Paste Not Found</h3>
+					<p>We couldn't find a paste with ID: {id}</p>
+					<a href="/" class="btn variant-soft-surface mt-4">Return to Home</a>
+				</div>
+			</div>
+		</div>
+	{/if}
 </div>

@@ -78,17 +78,26 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
+                /** @description Success response with paste data */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.PasteResponse"];
+                        "application/json": components["schemas"]["models.APIResponse-models_PasteData"];
                     };
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Paste not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -125,13 +134,13 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description OK */
+                /** @description Success response with paste data */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.PasteResponse"];
+                        "application/json": components["schemas"]["models.APIResponse-models_PasteData"];
                     };
                 };
                 /** @description Bad Request */
@@ -176,16 +185,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.PasteResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["models.ErrorResponse"];
+                        "application/json": components["schemas"]["models.APIResponse-uint64"];
                     };
                 };
                 /** @description Not Found */
@@ -238,13 +238,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
+                /** @description Success response with paste list data */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.PasteListResponse"];
+                        "application/json": components["schemas"]["models.APIResponse-models_PasteListData"];
                     };
                 };
                 /** @description Bad Request */
@@ -298,17 +298,26 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
+                /** @description Success response with paste data */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.PasteResponse"];
+                        "application/json": components["schemas"]["models.APIResponse-models_PasteData"];
                     };
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Paste not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -583,6 +592,27 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        "models.APIResponse-models_PasteData": {
+            data?: components["schemas"]["models.PasteData"];
+            /** @example Operation successful */
+            message?: string;
+            /** @example true */
+            success?: boolean;
+        };
+        "models.APIResponse-models_PasteListData": {
+            data?: components["schemas"]["models.PasteListData"];
+            /** @example Operation successful */
+            message?: string;
+            /** @example true */
+            success?: boolean;
+        };
+        "models.APIResponse-uint64": {
+            data?: number;
+            /** @example Operation successful */
+            message?: string;
+            /** @example true */
+            success?: boolean;
+        };
         "models.CreatePasteRequest": {
             content: string;
             /** @example 2023-01-08T00:00:00Z */
@@ -600,9 +630,11 @@ export interface components {
             error?: components["schemas"]["models.ErrorType"];
             /** @example This is a pretty message */
             message?: string;
+            request_id?: string;
+            timestamp?: string;
         };
         /** @enum {string} */
-        "models.ErrorType": "FAILED_CHECK" | "UNAUTHORIZED" | "NOT_FOUND" | "BAD_REQUEST" | "INTERNAL_ERROR";
+        "models.ErrorType": "FAILED_CHECK" | "UNAUTHORIZED" | "NOT_FOUND" | "BAD_REQUEST" | "INTERNAL_ERROR" | "FORBIDDEN" | "CONFLICT" | "VALIDATION_ERROR" | "RATE_LIMITED" | "TIMEOUT" | "SERVICE_UNAVAILABLE" | "UNPROCESSABLE_ENTITY";
         "models.HealthResponse": {
             /** @example true */
             application: boolean;
@@ -638,16 +670,13 @@ export interface components {
             /** @example u98765zyxwv */
             user_id?: string;
         };
-        /** @description List of pastes response wrapper */
-        "models.PasteListResponse": {
-            count?: number;
-            data?: components["schemas"]["models.Paste"][];
-            error?: string;
+        "models.PasteData": {
+            paste?: components["schemas"]["models.Paste"];
         };
-        /** @description Paste response wrapper */
-        "models.PasteResponse": {
-            data?: components["schemas"]["models.Paste"];
-            error?: string;
+        /** @description List of pastes response wrapper */
+        "models.PasteListData": {
+            count?: number;
+            pastes?: components["schemas"]["models.Paste"][];
         };
         "models.UpdatePasteRequest": {
             content: string;
