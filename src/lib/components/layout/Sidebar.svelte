@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { type PopupSettings } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import { pastesStore, pastes as pastesData, pastesLoading } from '$lib/stores/pastes';
 	import PasteGroup from '$lib/components/layout/sidebar/PasteGroup.svelte';
 	import { browser } from '$app/environment';
+	import { afterNavigate, onNavigate } from '$app/navigation';
 	import type { components } from '$lib/api/v1';
 
 	type Paste = components['schemas']['models.Paste'];
@@ -19,16 +19,37 @@
 	let width = $state(isOpen ? 16 : 4); // Current width in rem
 	let targetWidth = $state(isOpen ? 16 : 4); // Target width to animate to
 	let animating = $state(false);
-
-	let searchInputElement: HTMLInputElement;
+	let lastFetchTime = $state(0); // Track when we last fetched data
+	let refreshInterval = 60000; // Refresh after 1 minute (adjust as needed)
+	let initialFetchDone = $state(false);
+	let searchInputElement = $state<HTMLInputElement | null>(null);
+	let navigationComplete = $state(false);
+	let isPhoneSize = $state(false);
 	// Derived state
 	let filteredPastes = $derived(
 		$pastesData.filter((paste) => paste.title.toLowerCase().includes(searchQuery.toLowerCase()))
 	);
 
+	let adjustedWidth = $derived(isOpen && isPhoneSize ? 0 : width);
+
 	// Constants
 	const SMALL_SCREEN_BREAKPOINT = 768;
+	const PHONE_BREAKPOINT = 400;
 	const ANIMATION_DURATION = 300; // ms
+
+	// Smart fetch function that only loads data if needed
+	async function smartFetchPastes() {
+		if ($pastesData.length === 0 || Date.now() - lastFetchTime > refreshInterval) {
+			await pastesStore.fetchAllPastes();
+			lastFetchTime = Date.now();
+		}
+	}
+
+	// Force refresh function for manual updates
+	// function forceRefresh() {
+	// 	pastesStore.fetchAllPastes();
+	// 	lastFetchTime = Date.now();
+	// }
 
 	$effect(() => {
 		// Update target width when isOpen changes
@@ -36,6 +57,25 @@
 
 		if (!animating && width !== targetWidth) {
 			animateWidth();
+		}
+	});
+
+	// Monitor page changes to potentially update data without full reloads
+	// $effect(() => {
+	// 	// When navigation completes (navigating becomes null)
+	// 	if (navigating === null && browser && initialFetchDone) {
+	// 		smartFetchPastes();
+	// 	}
+	// });
+
+	onNavigate(() => {
+		navigationComplete = false;
+	});
+
+	afterNavigate(() => {
+		navigationComplete = true;
+		if (browser && initialFetchDone) {
+			smartFetchPastes();
 		}
 	});
 
@@ -140,6 +180,12 @@
 				if (windowWidth > SMALL_SCREEN_BREAKPOINT) {
 					isOpen = true;
 				}
+				if (windowWidth < PHONE_BREAKPOINT) {
+					isPhoneSize = true;
+				}
+				if (windowWidth > PHONE_BREAKPOINT) {
+					isPhoneSize = false;
+				}
 			};
 
 			window.addEventListener('resize', handleResize);
@@ -153,7 +199,7 @@
 
 <aside
 	class="sidebar fixed top-0 left-0 h-screen overflow-hidden
-    border-r-2 border-surface-600 bg-surface-900 shadow-sm"
+    border-r-2 border-surface-600 bg-surface-900 shadow-sm z-50"
 	style="width: {width}rem"
 >
 	<div class="flex h-full flex-col" style="padding: {isOpen ? '1.5rem' : '0.5rem'};">
@@ -337,9 +383,7 @@
 		</div>
 	</div>
 </aside>
-{#if !isOpen}
-	<div class="sidebar-spacer" style="width: {width}rem;"></div>
-{/if}
+<div class="sidebar-spacer" style="width: {adjustedWidth}rem;"></div>
 
 <style>
 	.sidebar {
@@ -354,10 +398,12 @@
 	}
 
 	:global([data-popup^='paste-'] .arrow) {
+		z-index: 100 !important; /* Higher than sidebar z-index */
 		left: -5px !important; /* Adjust arrow to point correctly */
 	}
 	.sidebar-spacer {
 		height: 100vh;
+		z-index: 1;
 		float: left;
 	}
 </style>

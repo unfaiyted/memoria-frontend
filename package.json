@@ -59,6 +59,7 @@
 		"@tiptap/starter-kit": "^2.11.5",
 		"@vincjo/datatables": "^2.2.0",
 		"dompurify": "^3.2.4",
+		"gsap": "^3.12.7",
 		"highlight.js": "11.11.0",
 		"lowlight": "^3.3.0",
 		"openapi-fetch": "^0.13.3",

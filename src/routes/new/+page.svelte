@@ -132,7 +132,7 @@
 					</div>
 				</header>
 				<div class="p-2 bg-surface-200-700-token">
-					<Editor bind:value={content} />
+					<Editor value={content} />
 				</div>
 				<footer class="card-footer border-t-2 pt-3 border-surface-700">
 					<em class="text-xs">Editor can handle code and color coding</em>
