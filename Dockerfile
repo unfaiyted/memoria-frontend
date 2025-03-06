@@ -1,6 +1,15 @@
 # Build stage
 FROM oven/bun:1 as builder
 
+# Define build arguments for environment variables
+ARG VITE_API_URL
+ARG VITE_API_KEY
+
+# Set environment variables during the build process
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_API_KEY=$VITE_API_KEY
+
+
 WORKDIR /app
 
 # Copy package files
@@ -42,6 +51,6 @@ ENV HOST=0.0.0.0
 ENV PORT=3000
 
 # Start the application
-CMD ["bun", "./build/index.js"]
+CMD ["bun", "run", "./build/index.js"]
 
 
