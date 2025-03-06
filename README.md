@@ -12,6 +12,13 @@ The frontend component of Memoria, a modern web application designed to allow yo
 
 Memoria Frontend provides a sleek, responsive interface for Faiyt's ecosystem of apps.
 
+## Screenshots
+
+<div align="center">
+  <img src="docs/application_screenshot.png" alt="Home page" width="80%" />
+  <p><em>Memoria home page with dark theme</em></p>
+</div>
+
 ## 🚀 Features
 
 - Modern, responsive UI built with SvelteKit and TailwindCSS

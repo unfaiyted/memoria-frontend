@@ -73,7 +73,7 @@
 					<div
 						class="card p-2 variant-filled-{variant} {isOpen
 							? 'hidden opacity-0 invisible'
-							: 'whitespace-nowrap max-w-[100px]'}"
+							: 'whitespace-nowrap max-w-[200px]'}"
 						data-popup={`paste-${paste.id}`}
 					>
 						<p class="text-sm">{paste.title}</p>

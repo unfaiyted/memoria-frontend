@@ -196,7 +196,7 @@
 					transition:fade={{ duration: 200 }}
 					class="text-xl font-semibold whitespace-nowrap overflow-hidden"
 				>
-					{title}
+					<a href="/">{title}</a>
 				</h1>
 			{/if}
 		</div>

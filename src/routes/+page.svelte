@@ -29,14 +29,32 @@
 	<!-- Hero section with CTA -->
 	<div class="flex flex-col items-center justify-center min-h-[75vh] text-center space-y-10">
 		<div class="space-y-4">
-			<h1 class="h1 text-primary-500">Share Code Instantly</h1>
+			<h1 class="h2 text-primary-500">
+				<div class="flex flex-row justify-center items-center">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class={`lucide w-8 h-8 mr-2 text-purple-50`}
+						><path d="m18 16 4-4-4-4"></path><path d="m6 8-4 4 4 4"></path><path d="m14.5 4-5 16"
+						></path></svg
+					> Memoria
+				</div>
+			</h1>
+			<h2 class="h1 text-secondary-500">Share Code Instantly</h2>
 			<p class="text-xl max-w-md mx-auto">
 				A simple and secure way to share code snippets and text with anyone.
 			</p>
 		</div>
 
 		<!-- CTA Card -->
-		<div class="card p-10 variant-glass-surface w-full max-w-2xl">
+		<div class="card card-hover p-10 variant-glass-surface w-full max-w-2xl">
 			<a href="/new" class="btn btn-xl variant-filled-primary w-full py-8 text-3xl font-bold">
 				Paste
 			</a>
