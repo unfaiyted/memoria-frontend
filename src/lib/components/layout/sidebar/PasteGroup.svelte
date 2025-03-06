@@ -6,11 +6,14 @@
 	import type { components } from '$lib/api/v1';
 
 	type Paste = components['schemas']['models.Paste'];
-	// Props
-	export let pastes: Array<Paste> = [];
-	export let groupTitle: string;
-	export let isOpen: boolean;
-	export let variant: string = 'surface';
+
+	let {
+		pastes = [] as Paste[],
+		groupTitle = '',
+		isOpen = false,
+		variant = 'surface',
+		onPasteClick = () => {}
+	} = $props();
 
 	function getPastePopupSettings(pasteId: string | number): PopupSettings {
 		return {
@@ -18,6 +21,10 @@
 			target: `paste-${pasteId}`,
 			placement: 'right'
 		};
+	}
+
+	function handlePasteClick(event: MouseEvent, pasteId: string | number) {
+		onPasteClick?.(pasteId);
 	}
 </script>
 
@@ -40,6 +47,7 @@
 							? 'space-x-3'
 							: 'justify-center'}"
 						use:popup={getPastePopupSettings(paste.id)}
+						onclick={(e) => handlePasteClick(e, paste.id)}
 					>
 						<svg
 							class="h-5 w-5 flex-shrink-0"

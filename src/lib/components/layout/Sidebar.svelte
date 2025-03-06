@@ -20,6 +20,7 @@
 	let targetWidth = $state(isOpen ? 16 : 4); // Target width to animate to
 	let animating = $state(false);
 
+	let searchInputElement: HTMLInputElement;
 	// Derived state
 	let filteredPastes = $derived(
 		$pastesData.filter((paste) => paste.title.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -116,6 +117,15 @@
 		}
 	}
 
+	function handleSearchIconClick() {
+		if (!isOpen) {
+			isOpen = true;
+			setTimeout(() => {
+				searchInputElement?.focus();
+			}, ANIMATION_DURATION);
+		}
+	}
+
 	// Setup code
 	onMount(() => {
 		pastesStore.fetchAllPastes();
@@ -124,6 +134,12 @@
 		if (browser) {
 			const handleResize = () => {
 				windowWidth = window.innerWidth;
+				if (windowWidth < SMALL_SCREEN_BREAKPOINT) {
+					isOpen = false;
+				}
+				if (windowWidth > SMALL_SCREEN_BREAKPOINT) {
+					isOpen = true;
+				}
 			};
 
 			window.addEventListener('resize', handleResize);
@@ -137,7 +153,7 @@
 
 <aside
 	class="sidebar fixed top-0 left-0 h-screen overflow-hidden
-    border-r-2 border-surface-600 bg-surface-900 shadow-sm mr-10"
+    border-r-2 border-surface-600 bg-surface-900 shadow-sm"
 	style="width: {width}rem"
 >
 	<div class="flex h-full flex-col" style="padding: {isOpen ? '1.5rem' : '0.5rem'};">
@@ -194,6 +210,7 @@
 							type="text"
 							placeholder="Search pastes..."
 							bind:value={searchQuery}
+							bind:this={searchInputElement}
 							class="input w-full border py-2 pl-10 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
 						/>
 						<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -214,7 +231,11 @@
 					</div>
 				</div>
 			{:else}
-				<button class="flex justify-center mb-4 w-full" aria-label="Search">
+				<button
+					class="flex justify-center mb-4 w-full"
+					aria-label="Search"
+					onclick={handleSearchIconClick}
+				>
 					<svg class="h-5 w-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							stroke-linecap="round"
@@ -257,13 +278,29 @@
 			{:else}
 				<div class="max-w-[210px]">
 					<!-- Today -->
-					<PasteGroup pastes={groupedPastes.today} groupTitle="Today" {isOpen} variant="primary" />
+					<PasteGroup
+						pastes={groupedPastes.today}
+						groupTitle="Today"
+						{isOpen}
+						variant="primary"
+						onPasteClick={handlePasteClick}
+					/>
 
 					<!-- Yesterday -->
-					<PasteGroup pastes={groupedPastes.yesterday} groupTitle="Yesterday" {isOpen} />
+					<PasteGroup
+						pastes={groupedPastes.yesterday}
+						groupTitle="Yesterday"
+						{isOpen}
+						onPasteClick={handlePasteClick}
+					/>
 
 					<!-- Older -->
-					<PasteGroup pastes={groupedPastes.older} groupTitle="Older" {isOpen} />
+					<PasteGroup
+						pastes={groupedPastes.older}
+						groupTitle="Older"
+						{isOpen}
+						onPasteClick={handlePasteClick}
+					/>
 				</div>
 
 				<!-- No results message -->
