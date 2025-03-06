@@ -50,6 +50,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@codemirror/lang-javascript": "^6.2.3",
+		"@codemirror/theme-one-dark": "^6.1.2",
 		"@floating-ui/dom": "^1.6.13",
 		"@tiptap/core": "^2.11.5",
 		"@tiptap/extension-bubble-menu": "^2.11.5",
@@ -63,7 +65,9 @@
 		"highlight.js": "11.11.0",
 		"lowlight": "^3.3.0",
 		"openapi-fetch": "^0.13.3",
+		"svelte-codemirror-editor": "^1.4.1",
 		"svelte-purify": "^2.0.4",
+		"svelte-tiptap": "^2.1.0",
 		"swagger2openapi": "^7.0.8",
 		"unplugin-icons": "^22.1.0"
 	}

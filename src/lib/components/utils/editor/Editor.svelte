@@ -1,9 +1,37 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import CodeBlock from './CodeBlock.svelte';
+	import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+	import { all, createLowlight } from 'lowlight';
 	import { Editor } from '@tiptap/core';
 	import StarterKit from '@tiptap/starter-kit';
 	import { BubbleMenu } from '@tiptap/extension-bubble-menu';
 	import { FloatingMenu } from '@tiptap/extension-floating-menu';
+
+	// Existing imports
+	// import hljs from 'highlight.js/lib/core';
+	import 'highlight.js/styles/github-dark.css';
+
+	import xml from 'highlight.js/lib/languages/xml';
+	import css from 'highlight.js/lib/languages/css';
+	import js from 'highlight.js/lib/languages/javascript';
+	import ts from 'highlight.js/lib/languages/typescript';
+	import html from 'highlight.js/lib/languages/xml';
+	import { SvelteNodeViewRenderer } from 'svelte-tiptap';
+
+	// Register highlight.js languages
+	// hljs.registerLanguage('xml', xml);
+	// hljs.registerLanguage('css', css);
+	// hljs.registerLanguage('javascript', js);
+	// hljs.registerLanguage('typescript', ts);
+
+	const lowlight = createLowlight(all);
+
+	lowlight.register('html', html);
+	lowlight.register('css', css);
+	lowlight.register('js', js);
+	lowlight.register('ts', ts);
+	lowlight.register('xml', xml);
 
 	let { value = '', autofocus = true, onUpdate = () => {}, onReady = () => {} } = $props();
 
@@ -38,6 +66,11 @@
 			autofocus: autofocus,
 			extensions: [
 				StarterKit,
+				CodeBlockLowlight.extend({
+					addNodeView() {
+						return SvelteNodeViewRenderer(CodeBlock);
+					}
+				}).configure({ lowlight }),
 				BubbleMenu.configure({
 					element: bubbleMenuElement,
 					tippyOptions: { duration: 100 }
@@ -83,6 +116,7 @@
 	$effect(() => {
 		isUpdatingFromProps = true;
 		if (editor) editor.commands.setContent(value);
+		onUpdate(value);
 		isUpdatingFromProps = false;
 	});
 
@@ -92,6 +126,7 @@
 	const isHeading1Active = $derived(editor?.isActive('heading', { level: 1 }) ?? false);
 	const isHeading2Active = $derived(editor?.isActive('heading', { level: 2 }) ?? false);
 	const isBulletListActive = $derived(editor?.isActive('bulletList') ?? false);
+	const isCodeBlockActive = $derived(editor?.isActive('codeblock') ?? false);
 </script>
 
 <div class="card">
@@ -131,8 +166,8 @@
 			>
 		</button>
 		<button
-			onclick={() => editor?.chain().focus().toggleBold().run()}
-			class:is-active={isBoldActive}
+			onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
+			class:is-active={isCodeBlockActive}
 			aria-label="Code Block"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
@@ -162,6 +197,24 @@
 				/></svg
 			>
 		</button>
+		<button
+			onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
+			class:is-active={isCodeBlockActive}
+			class="chip variant-filled"
+			aria-label="Code Block"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+				><!-- Icon from CodeX Icons by CodeX - https://github.com/codex-team/icons/blob/master/LICENSE --><path
+					fill="none"
+					stroke="currentColor"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="m9 8l-4 4l4 4m6-8l4 4l-4 4"
+				/></svg
+			>
+		</button>
+
 		<button
 			onclick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
 			class:is-active={isHeading1Active}

@@ -6,14 +6,11 @@
 	// Existing imports
 	import hljs from 'highlight.js/lib/core';
 	import 'highlight.js/styles/github-dark.css';
-	import { storeHighlightJs } from '@skeletonlabs/skeleton';
+	import { storeHighlightJs, CodeBlock } from '@skeletonlabs/skeleton';
 	import xml from 'highlight.js/lib/languages/xml';
 	import css from 'highlight.js/lib/languages/css';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
-
-	import { initializeStores, Toast } from '@skeletonlabs/skeleton';
-	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 
 	// Register highlight.js languages
 	hljs.registerLanguage('xml', xml);
@@ -21,6 +18,10 @@
 	hljs.registerLanguage('javascript', javascript);
 	hljs.registerLanguage('typescript', typescript);
 	storeHighlightJs.set(hljs);
+	import 'highlight.js/styles/github-dark.css';
+
+	import { initializeStores, Toast } from '@skeletonlabs/skeleton';
+	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 
 	initializeStores();
 
@@ -62,9 +63,7 @@
 	>
 		<Sidebar isOpen={sidebarOpen} onToggle={handleToggle} />
 	</div>
-	<main
-		class={`overflow-y-auto flex-1 z-10 transition-all flex item-center duration-300 max-w-[900px]`}
-	>
+	<main class={`overflow-y-auto  z-10 transition-all duration-300 w-full max-w-[1200px]`}>
 		<div bind:this={pageContainer}>
 			<slot />
 		</div>

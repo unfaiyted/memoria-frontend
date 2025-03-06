@@ -23,7 +23,6 @@
 	let refreshInterval = 60000; // Refresh after 1 minute (adjust as needed)
 	let initialFetchDone = $state(false);
 	let searchInputElement = $state<HTMLInputElement | null>(null);
-	let navigationComplete = $state(false);
 	let isPhoneSize = $state(false);
 	// Derived state
 	let filteredPastes = $derived(
@@ -69,11 +68,11 @@
 	// });
 
 	onNavigate(() => {
-		navigationComplete = false;
+		// navigationComplete = false;
 	});
 
 	afterNavigate(() => {
-		navigationComplete = true;
+		// navigationComplete = true;
 		if (browser && initialFetchDone) {
 			smartFetchPastes();
 		}

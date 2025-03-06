@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Editor from '$lib/components/utils/editor/Editor.svelte';
+	import CodeEditor from '$lib/components/utils/editor/CodeEditor.svelte';
 	import { pastesStore } from '$lib/stores/pastes';
 	import { goto } from '$app/navigation';
 	import { getToastStore } from '@skeletonlabs/skeleton';
@@ -12,6 +13,7 @@
 	let password = '';
 	let isPrivate = false;
 	let isLoading = false;
+	let isCodeEditor = true;
 
 	// Expiration options
 	const expirationOptions = [
@@ -44,8 +46,14 @@
 		}
 	}
 
+	async function handleUpdate(value: string) {
+		content = value;
+	}
+
 	// Handle form submission
-	async function handleSubmit() {
+	async function handleSubmit(e: SubmitEvent) {
+		e.preventDefault();
+
 		try {
 			isLoading = true;
 
@@ -97,7 +105,7 @@
 <div class="container mx-auto p-6 max-w-4xl overflow-y">
 	<h2 class="h2 pb-4">Create New Paste</h2>
 
-	<form on:submit|preventDefault={handleSubmit} class="space-y-6">
+	<form onsubmit={handleSubmit} class="space-y-6">
 		<!-- Content Editor -->
 		<div>
 			<div class="flex justify-between items-center mb-1">
@@ -112,7 +120,54 @@
 					<div class="flex justify-between">
 						<div>Press <kbd class="kbd">⌘ + V</kbd> to paste.</div>
 						<div class="pr-4">
-							<button class="chip variant-soft hover:variant-filled">
+							<button
+								class="chip variant-soft hover:variant-filled"
+								onclick={(e) => {
+									e.preventDefault();
+									isCodeEditor = !isCodeEditor;
+								}}
+							>
+								<span>
+									{#if !isCodeEditor}
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="1em"
+											height="1em"
+											viewBox="0 0 24 24"
+											{...$$props}
+											><!-- Icon from All by undefined - undefined --><path
+												fill="currentColor"
+												d="M7 19q-.825 0-1.412-.587T5 17q0-.375.15-.737t.45-.663l10-10q.3-.3.663-.45T17 5q.825 0 1.413.587T19 7q0 .375-.137.75t-.438.675l-10 10q-.3.3-.663.438T7 19"
+											/></svg
+										>
+									{:else}
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="1em"
+											height="1em"
+											viewBox="0 0 24 24"
+											{...$$props}
+											><!-- Icon from CodeX Icons by CodeX - https://github.com/codex-team/icons/blob/master/LICENSE --><path
+												fill="none"
+												stroke="currentColor"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="m9 8l-4 4l4 4m6-8l4 4l-4 4"
+											/></svg
+										>
+									{/if}
+								</span>
+								<span>Swith Editor</span>
+							</button>
+
+							<button
+								class="chip variant-soft hover:variant-filled"
+								onclick={(e) => {
+									e.preventDefault();
+									content = '';
+								}}
+							>
 								<span
 									><svg
 										xmlns="http://www.w3.org/2000/svg"
@@ -132,7 +187,11 @@
 					</div>
 				</header>
 				<div class="p-2 bg-surface-200-700-token">
-					<Editor value={content} />
+					{#if isCodeEditor}
+						<CodeEditor value={content} onUpdate={handleUpdate} />
+					{:else}
+						<Editor value={content} onUpdate={handleUpdate} />
+					{/if}
 				</div>
 				<footer class="card-footer border-t-2 pt-3 border-surface-700">
 					<em class="text-xs">Editor can handle code and color coding</em>

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { getToastStore } from '@skeletonlabs/skeleton';
+	import { getToastStore, CodeBlock } from '@skeletonlabs/skeleton';
 	import { page } from '$app/stores'; // TODO: Replace with non-deprecated alternative when upgrading
 	import { pastesStore, currentPaste, pastesLoading, pastesError } from '$lib/stores/pastes';
 	import { goto } from '$app/navigation';
-	import { Render } from 'svelte-purify';
-	import { Render as RenderOnClient } from 'svelte-purify/browser-only';
+	// import DOMPurify from 'dompurify';
+
 	// Access the ID from the URL parameter with proper type checking
 	$: id = $page.params.id ? parseInt($page.params.id, 10) : null;
 
@@ -144,21 +144,21 @@
 				</div>
 
 				<div class="flex flex-wrap gap-2 self-end sm:self-auto">
-					<button class="btn variant-filled-primary" on:click={copyToClipboard}>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="1em"
-							height="1em"
-							viewBox="0 0 256 256"
-							class="mr-2"
-						>
-							<path
-								fill="currentColor"
-								d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8m-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z"
-							/>
-						</svg>
-						Copy
-					</button>
+					<!-- <button class="btn variant-filled-primary" on:click={copyToClipboard}> -->
+					<!-- 	<svg -->
+					<!-- 		xmlns="http://www.w3.org/2000/svg" -->
+					<!-- 		width="1em" -->
+					<!-- 		height="1em" -->
+					<!-- 		viewBox="0 0 256 256" -->
+					<!-- 		class="mr-2" -->
+					<!-- 	> -->
+					<!-- 		<path -->
+					<!-- 			fill="currentColor" -->
+					<!-- 			d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8m-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z" -->
+					<!-- 		/> -->
+					<!-- 	</svg> -->
+					<!-- 	Copy -->
+					<!-- </button> -->
 
 					{#if isLoggedIn && isOwner}
 						<button class="btn variant-filled-error" on:click={deletePaste}>
@@ -182,7 +182,10 @@
 				<!-- For regular content that might contain HTML -->
 				<div class="card p-6 variant-ghost rounded-none">
 					<div class="prose dark:prose-invert max-w-none">
-						<Render html={$currentPaste.content} />
+						<!-- {@html DOMPurify.sanitize($currentPaste.content)} -->
+						<CodeBlock language="javascript" code={$currentPaste.content} />
+
+						<!-- <CodeBlock language="html" code={`<div>This is meta</div>`}></CodeBlock> -->
 					</div>
 				</div>
 				<!-- {/if} -->
