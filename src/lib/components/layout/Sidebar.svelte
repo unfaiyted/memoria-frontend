@@ -131,18 +131,22 @@
 
 		// Helper function to sort pastes by created_at in descending order
 		const sortByDateDesc = (a: Paste, b: Paste) => {
-			return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+			return new Date(b.createdAt as string).getTime() - new Date(a.createdAt as string).getTime();
 		};
 
 		return {
-			today: pasteList.filter((paste) => new Date(paste.created_at) >= today).sort(sortByDateDesc),
+			today: pasteList
+				.filter((paste) => new Date(paste.createdAt as string) >= today)
+				.sort(sortByDateDesc),
 			yesterday: pasteList
 				.filter(
-					(paste) => new Date(paste.created_at) >= yesterday && new Date(paste.created_at) < today
+					(paste) =>
+						new Date(paste.createdAt as string) >= yesterday &&
+						new Date(paste.createdAt as string) < today
 				)
 				.sort(sortByDateDesc),
 			older: pasteList
-				.filter((paste) => new Date(paste.created_at) < yesterday)
+				.filter((paste) => new Date(paste.createdAt as string) < yesterday)
 				.sort(sortByDateDesc)
 		};
 	}
@@ -342,6 +346,15 @@
 				</div>
 			{:else}
 				<div class="max-w-[210px]">
+					<!-- Today -->
+					<!-- <PasteGroup -->
+					<!-- pastes={sortedPrivatePastes} -->
+					<!-- 	groupTitle="Private" -->
+					<!-- 	{isOpen} -->
+					<!-- 	variant="primary" -->
+					<!-- 	onPasteClick={handlePasteClick} -->
+					<!-- /> -->
+
 					<!-- Today -->
 					<PasteGroup
 						pastes={groupedPastes.today}

@@ -2,8 +2,10 @@
 	import Editor from '$lib/components/utils/editor/Editor.svelte';
 	import CodeEditor from '$lib/components/utils/editor/CodeEditor.svelte';
 	import { pastesStore } from '$lib/stores/pastes';
+	import { pasteStorage } from '$lib/data/storage';
 	import { goto } from '$app/navigation';
-	import { getToastStore } from '@skeletonlabs/skeleton';
+	import { popup, getToastStore, type PopupSettings } from '@skeletonlabs/skeleton';
+	import { type CreatePasteRequest, type Paste } from '$lib/api/types';
 
 	const toastStore = getToastStore();
 	// Form state
@@ -25,6 +27,11 @@
 		{ value: 'never', label: 'Never' }
 	];
 
+	const popupClick: PopupSettings = {
+		event: 'hover',
+		target: 'popupClick',
+		placement: 'top'
+	};
 	// Calculate expiration date based on selected option
 	function calculateExpiresAt(option: string) {
 		if (option === 'never') return undefined;
@@ -58,38 +65,47 @@
 			isLoading = true;
 
 			// Determine privacy setting
-			let privacy = 'public';
-			if (password) {
-				privacy = 'password';
-			} else if (isPrivate) {
-				privacy = 'private';
-			}
+			let privacy = isPrivate ? 'private' : 'public';
 
-			const pasteData = {
+			const pasteData: CreatePasteRequest = {
 				title,
 				content,
-				expires_at: calculateExpiresAt(expiration),
-				privacy: privacy as 'public' | 'private' | 'password',
-				syntax_highlight: 'auto' // Could implement language detection here
+				expiresAt: calculateExpiresAt(expiration),
+				privacy: privacy as 'public' | 'private',
+				editorType: isCodeEditor ? 'code' : 'text',
+				syntaxHighlight: 'auto' // TODO:  Could implement language detection around here
 			};
+
+			if (password != '') {
+				pasteData.password = password;
+			}
 
 			console.log('pasteData', pasteData);
 
 			// Create paste using the store
-			const result = await pastesStore.createPaste(pasteData);
-			console.log('result', result);
+			const result: Paste | null = await pastesStore.createPaste(pasteData);
 
 			if (result) {
 				toastStore.trigger({
 					message: 'Paste created successfully!',
 					background: 'variant-filled-success'
 				});
+
+				if (privacy === 'private') {
+					pasteStorage.addPasteAccessId(result.privateAccessId);
+				}
+
 				// Navigate to the new paste
-				goto(`/paste/${result.id}`);
+				if (password == '' && privacy == 'public') goto(`/paste/${result.id}`);
+				if (password == '' && privacy == 'private')
+					goto(`/paste/private/${result.privateAccessId}`);
+				if (password != '' && privacy == 'public') goto(`/paste/${result.id}?pw=${password}`);
+				if (password != '' && privacy == 'private')
+					goto(`/paste/private/${result.privateAccessId}?pw=${password}`);
 			}
 		} catch (error) {
 			toastStore.trigger({
-				message: `Error creating paste: ${error.message || 'Unknown error'}`,
+				message: `Error creating paste: ${(error as Error).message || 'Unknown error'}`,
 				background: 'variant-filled-error'
 			});
 		} finally {
@@ -245,7 +261,22 @@
 					bind:checked={isPrivate}
 					class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
 				/>
-				<label for="private" class="label pl-2"> Make paste private (only visible to you) </label>
+				<label for="private" class="label flex flex-row pl-2">
+					<span class="pr-2">Make paste private</span>
+					<span class="badge-icon variant-filled cursor-auto" use:popup={popupClick}
+						><svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="1em"
+							height="1em"
+							viewBox="0 0 24 24"
+							{...$$props}
+							><!-- Icon from All by undefined - undefined --><path
+								fill="currentColor"
+								d="M10.6 16q0-2.025.363-2.912T12.5 11.15q1.025-.9 1.563-1.562t.537-1.513q0-1.025-.687-1.7T12 5.7q-1.275 0-1.937.775T9.125 8.05L6.55 6.95q.525-1.6 1.925-2.775T12 3q2.625 0 4.038 1.463t1.412 3.512q0 1.25-.537 2.138t-1.688 2.012Q14 13.3 13.738 13.913T13.475 16zm1.4 6q-.825 0-1.412-.587T10 20t.588-1.412T12 18t1.413.588T14 20t-.587 1.413T12 22"
+							/></svg
+						>
+					</span>
+				</label>
 			</div>
 		</div>
 
@@ -264,4 +295,10 @@
 			</button>
 		</div>
 	</form>
+</div>
+
+<div class="card p-4 variant-filled-primary" data-popup="popupClick">
+	<p>Only visible with generated link or local storage save on the device.</p>
+	<p>You will need a password or anyone with a link can access it.</p>
+	<div class="arrow variant-filled-primary"></div>
 </div>

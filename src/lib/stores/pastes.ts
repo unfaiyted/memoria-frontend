@@ -2,6 +2,8 @@ import { derived } from 'svelte/store';
 import { createBaseStore, type BaseApiState } from './base';
 import { GET, POST, PUT, DELETE } from '$lib/api/client';
 import type { components } from '$lib/api/v1';
+import { type ErrorResponse } from '$lib/api/errors';
+import { ApiError } from '$lib/api/errors';
 
 // Define types from API schema
 type Paste = components['schemas']['models.Paste'];
@@ -37,8 +39,12 @@ function createPastesStore() {
 						query: { page, limit }
 					}
 				});
-				if (response.error) throw response.error;
-
+				if (response.error) {
+					const errorData = response.error as ErrorResponse;
+					// TODO: add status to backend type
+					const status = response.error?.status || 500;
+					throw new ApiError(errorData, status);
+				}
 				const data = response.data as PasteListResponse;
 				if (data && data.data) {
 					store.update((state) => ({
@@ -52,15 +58,21 @@ function createPastesStore() {
 			}
 		},
 
-		async fetchPaste(id: number) {
+		async fetchPaste(id: number, pw: string | null): Promise<Paste | null> {
 			store.setLoading(true);
 			try {
 				const response = await GET('/paste/{id}', {
 					params: {
-						path: { id }
+						path: { id },
+						...(pw !== null ? { query: { pw } } : {})
 					}
 				});
-				if (response.error) throw response.error;
+				if (response.error) {
+					const errorData = response.error as ErrorResponse;
+					// TODO: add status to backend type
+					const status = response.error?.status || 500;
+					throw new ApiError(errorData, status);
+				}
 
 				const data = response.data as PasteResponse;
 				if (data && data.data && data.data.paste) {
@@ -73,18 +85,24 @@ function createPastesStore() {
 				}
 				return null;
 			} catch (err) {
+				console.log('err-catch', err);
 				store.setError(err);
 				throw err;
 			}
 		},
 
-		async createPaste(pasteData: CreatePasteRequest) {
+		async createPaste(pasteData: CreatePasteRequest): Promise<Paste | null> {
 			store.setLoading(true);
 			try {
 				const response = await POST('/paste', {
 					body: pasteData
 				});
-				if (response.error) throw response.error;
+				if (response.error) {
+					const errorData = response.error as ErrorResponse;
+					// TODO: add status to backend type
+					const status = response.error?.status || 500;
+					throw new ApiError(errorData, status);
+				}
 
 				console.log('create', response);
 
@@ -111,7 +129,12 @@ function createPastesStore() {
 				const response = await PUT('/paste', {
 					body: paste
 				});
-				if (response.error) throw response.error;
+				if (response.error) {
+					const errorData = response.error as ErrorResponse;
+					// TODO: add status to backend type
+					const status = response.error?.status || 500;
+					throw new ApiError(errorData, status);
+				}
 
 				const data = response.data as PasteResponse;
 				if (data && data.data && data.data.paste) {
@@ -138,7 +161,12 @@ function createPastesStore() {
 						path: { id }
 					}
 				});
-				if (response.error) throw response.error;
+				if (response.error) {
+					const errorData = response.error as ErrorResponse;
+					// TODO: add status to backend type
+					const status = response.error?.status || 500;
+					throw new ApiError(errorData, status);
+				}
 
 				const data = response.data as PasteDeleteResponse;
 				store.update((state) => ({

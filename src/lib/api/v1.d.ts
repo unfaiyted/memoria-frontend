@@ -275,6 +275,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/paste/private/{access_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Gets a specific private paste using its private access ID
+         * @description Retrieve a private paste by its private access ID
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Private Access ID */
+                    access_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success response with paste data */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.APIResponse-models_PasteData"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Paste not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/paste/{id}": {
         parameters: {
             query?: never;
@@ -288,7 +357,10 @@ export interface paths {
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Password for protected pastes */
+                    pw?: string;
+                };
                 header?: never;
                 path: {
                     /** @description Paste ID */
@@ -309,6 +381,15 @@ export interface paths {
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Pssword required or invalid password */
+                401: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -615,11 +696,14 @@ export interface components {
         };
         "models.CreatePasteRequest": {
             content: string;
+            editorType?: string;
             /** @example 2023-01-08T00:00:00Z */
-            expires_at?: string;
+            expiresAt?: string;
+            /** @example mySecurePassword123 */
+            password?: string;
             /** @enum {string} */
             privacy: "public" | "private" | "password";
-            syntax_highlight?: string;
+            syntaxHighlight?: string;
             title: string;
         };
         "models.ErrorResponse": {
@@ -652,19 +736,23 @@ export interface components {
             /** @example console.log('Hello world'); */
             content: string;
             /** @example 2023-01-01T00:00:00Z */
-            created_at?: string;
+            createdAt?: string;
+            /** @example vscode */
+            editorType?: string;
             /** @example 2023-01-08T00:00:00Z */
-            expires_at?: string;
+            expiresAt?: string;
             /** @example 123111 */
             id: number;
             /**
-             * @description "public", "private", "password"
+             * @description "public", "private"
              * @example public
              * @enum {string}
              */
-            privacy: "public" | "private" | "password";
+            privacy: "public" | "private";
+            /** @example abc123xyz456 */
+            privateAccessId?: string;
             /** @example javascript */
-            syntax_highlight: string;
+            syntaxHighlight: string;
             /** @example My Code Snippet */
             title: string;
             /** @example u98765zyxwv */
@@ -680,12 +768,15 @@ export interface components {
         };
         "models.UpdatePasteRequest": {
             content: string;
+            editorType?: string;
             /** @example 2023-01-08T00:00:00Z */
-            expires_at?: string;
+            expiresAt?: string;
             id: number;
+            /** @example mySecurePassword123 */
+            password?: string;
             /** @enum {string} */
             privacy: "public" | "private" | "password";
-            syntax_highlight?: string;
+            syntaxHighlight?: string;
             title: string;
         };
         "models.User": {

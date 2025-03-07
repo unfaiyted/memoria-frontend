@@ -1,10 +1,19 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "",
-    "title": "",
-    "contact": {},
-    "version": ""
+    "description": "API Server for Memoria application",
+    "title": "Memoria API",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "name": "API Support",
+      "url": "http://www.swagger.io/support",
+      "email": "support@swagger.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0"
   },
   "paths": {
     "/health": {
@@ -261,21 +270,21 @@
         }
       }
     },
-    "/paste/{id}": {
+    "/paste/private/{access_id}": {
       "get": {
-        "description": "Retrieve a paste by ID",
+        "description": "Retrieve a private paste by its private access ID",
         "tags": [
           "pastes"
         ],
-        "summary": "Gets a specific paste",
+        "summary": "Gets a specific private paste using its private access ID",
         "parameters": [
           {
-            "description": "Paste ID",
-            "name": "id",
+            "description": "Private Access ID",
+            "name": "access_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string"
             }
           }
         ],
@@ -292,6 +301,86 @@
           },
           "400": {
             "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paste not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paste/{id}": {
+      "get": {
+        "description": "Retrieve a paste by ID",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Gets a specific paste",
+        "parameters": [
+          {
+            "description": "Paste ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Password for protected pastes",
+            "name": "pw",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response with paste data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Pssword required or invalid password",
             "content": {
               "application/json": {
                 "schema": {
@@ -558,6 +647,11 @@
       }
     }
   },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api/v1"
+    }
+  ],
   "components": {
     "requestBodies": {
       "models.User": {
@@ -632,9 +726,16 @@
           "content": {
             "type": "string"
           },
-          "expires_at": {
+          "editorType": {
+            "type": "string"
+          },
+          "expiresAt": {
             "type": "string",
             "example": "2023-01-08T00:00:00Z"
+          },
+          "password": {
+            "type": "string",
+            "example": "mySecurePassword123"
           },
           "privacy": {
             "type": "string",
@@ -644,7 +745,7 @@
               "password"
             ]
           },
-          "syntax_highlight": {
+          "syntaxHighlight": {
             "type": "string"
           },
           "title": {
@@ -745,7 +846,7 @@
           "content",
           "id",
           "privacy",
-          "syntax_highlight",
+          "syntaxHighlight",
           "title"
         ],
         "properties": {
@@ -753,11 +854,15 @@
             "type": "string",
             "example": "console.log('Hello world');"
           },
-          "created_at": {
+          "createdAt": {
             "type": "string",
             "example": "2023-01-01T00:00:00Z"
           },
-          "expires_at": {
+          "editorType": {
+            "type": "string",
+            "example": "vscode"
+          },
+          "expiresAt": {
             "type": "string",
             "example": "2023-01-08T00:00:00Z"
           },
@@ -766,16 +871,19 @@
             "example": 123111
           },
           "privacy": {
-            "description": "\"public\", \"private\", \"password\"",
+            "description": "\"public\", \"private\"",
             "type": "string",
             "enum": [
               "public",
-              "private",
-              "password"
+              "private"
             ],
             "example": "public"
           },
-          "syntax_highlight": {
+          "privateAccessId": {
+            "type": "string",
+            "example": "abc123xyz456"
+          },
+          "syntaxHighlight": {
             "type": "string",
             "example": "javascript"
           },
@@ -824,12 +932,19 @@
           "content": {
             "type": "string"
           },
-          "expires_at": {
+          "editorType": {
+            "type": "string"
+          },
+          "expiresAt": {
             "type": "string",
             "example": "2023-01-08T00:00:00Z"
           },
           "id": {
             "type": "integer"
+          },
+          "password": {
+            "type": "string",
+            "example": "mySecurePassword123"
           },
           "privacy": {
             "type": "string",
@@ -839,7 +954,7 @@
               "password"
             ]
           },
-          "syntax_highlight": {
+          "syntaxHighlight": {
             "type": "string"
           },
           "title": {

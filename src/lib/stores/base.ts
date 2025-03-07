@@ -9,6 +9,7 @@ export const client = createClient<paths>({ baseUrl });
 
 // Helper for error handling
 export function handleApiError(err: unknown): ErrorResponse {
+	console.log('handleApiErr', err, err instanceof Error);
 	return {
 		message: err instanceof Error ? err.message : 'Unknown error',
 		error: err instanceof Error ? 'INTERNAL_ERROR' : 'INTERNAL_ERROR'
@@ -33,6 +34,7 @@ export function createBaseStore<T extends BaseApiState>(initialState: T) {
 		},
 		setError: (err: unknown) => {
 			const error = handleApiError(err);
+			console.log(error);
 			store.update((state) => ({ ...state, error, loading: false }));
 		},
 		clearError: () => {
