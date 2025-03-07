@@ -204,14 +204,11 @@
 </script>
 
 <aside
-	class="sidebar fixed top-0 left-0 h-screen flex flex-col
+	class="sidebar fixed top-0 left-0 h-svh flex flex-col
     border-r-2 border-surface-600 bg-surface-900 shadow-sm z-50"
 	style="width: {width}rem"
 >
-	<div
-		class="flex h-full flex-col overflow-hidden"
-		style="padding: {isOpen ? '1.5rem' : '0.5rem'};"
-	>
+	<div class="flex h-svh flex-col overflow-hidden" style="padding: {isOpen ? '1.5rem' : '0.5rem'};">
 		<!-- Toggle Button -->
 		<button
 			class="absolute top-4 {isOpen
@@ -251,7 +248,12 @@
 					transition:fade={{ duration: 200 }}
 					class="text-xl font-semibold whitespace-nowrap overflow-hidden"
 				>
-					<a href="/">{title}</a>
+					<a
+						href="/"
+						onclick={() => {
+							isOpen = false;
+						}}>{title}</a
+					>
 				</h1>
 			{/if}
 		</div>
