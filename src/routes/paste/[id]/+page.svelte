@@ -119,18 +119,18 @@
 					<h2 class="h2 font-bold">{$currentPaste.title}</h2>
 
 					<div class="flex flex-wrap gap-3">
-						<div class="chip variant-soft-primary">
+						<div class="chip variant-soft-primary cursor-default">
 							<span>Creator: {$currentPaste.user_id || 'Anonymous'}</span>
 						</div>
 
 						{#if $currentPaste.expires_at}
-							<div class="chip variant-soft-warning">
+							<div class="chip variant-soft-warning cursor-default">
 								<span>Expires: {new Date($currentPaste.expires_at).toLocaleString()}</span>
 							</div>
 						{/if}
 
 						{#if $currentPaste.created_at}
-							<div class="chip variant-soft-primary">
+							<div class="chip variant-soft-primary cursor-default">
 								<span>Created: {new Date($currentPaste.created_at).toLocaleString()}</span>
 							</div>
 						{/if}

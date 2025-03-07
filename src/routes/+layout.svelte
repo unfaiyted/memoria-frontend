@@ -59,7 +59,7 @@
 <div class="flex min-h-screen overflow-hidden">
 	<Toast />
 	<div
-		class={`w-[${sidebarOpen ? '280px' : '50px'}] transition-all min-v-screen z-50 duration-300 ${sidebarOpen ? '' : '-translate-x-[0px]'}`}
+		class={`w-[${sidebarOpen ? '280px' : '50px'}] transition-all min-v-screen z-50 duration-300 h-dvh ${sidebarOpen ? '' : '-translate-x-[0px]'}`}
 	>
 		<Sidebar isOpen={sidebarOpen} onToggle={handleToggle} />
 	</div>

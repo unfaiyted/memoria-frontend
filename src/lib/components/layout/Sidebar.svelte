@@ -11,7 +11,7 @@
 
 	// Props with defaults
 
-	let { isOpen = $bindable(true), title = 'Memoria', onToggle } = $props();
+	let { isOpen = $bindable(false), title = 'Memoria', onToggle } = $props();
 
 	// State variables
 	let windowWidth = $state(browser ? window.innerWidth : 1024);
@@ -165,6 +165,13 @@
 		}
 	}
 
+	function handleNewPasteClick() {
+		if (windowWidth < SMALL_SCREEN_BREAKPOINT) {
+			isOpen = false;
+			onToggle?.({ isOpen });
+		}
+	}
+
 	// Setup code
 	onMount(() => {
 		pastesStore.fetchAllPastes();
@@ -173,6 +180,7 @@
 		if (browser) {
 			if (windowWidth < PHONE_BREAKPOINT) {
 				isPhoneSize = true;
+				isOpen = false;
 			}
 			if (windowWidth > PHONE_BREAKPOINT) {
 				isPhoneSize = false;
@@ -204,11 +212,11 @@
 </script>
 
 <aside
-	class="sidebar fixed top-0 left-0 h-svh flex flex-col
+	class="sidebar fixed top-0 left-0 h-dvh flex flex-col
     border-r-2 border-surface-600 bg-surface-900 shadow-sm z-50"
 	style="width: {width}rem"
 >
-	<div class="flex h-svh flex-col overflow-hidden" style="padding: {isOpen ? '1.5rem' : '0.5rem'};">
+	<div class="flex h-dvh flex-col overflow-hidden" style="padding: {isOpen ? '1.5rem' : '0.5rem'};">
 		<!-- Toggle Button -->
 		<button
 			class="absolute top-4 {isOpen
@@ -372,9 +380,10 @@
 		</div>
 
 		<!-- Create New Button -->
-		<div class="mt-6 pt-4 border-t border-surface-200 flex-shrink-0 pb-[50px] sm:pb-[0px]">
+		<div class="mt-6 pt-4 border-t border-surface-200 flex-shrink-0">
 			<a
 				href="/new"
+				onclick={handleNewPasteClick}
 				class="flex items-center justify-center py-2 px-4 bg-indigo-600
           hover:bg-indigo-700 rounded-md text-white {isOpen ? '' : 'w-full'}"
 			>

@@ -68,8 +68,8 @@
 				<p>No signup needed</p>
 			</div>
 			<div class="card p-4 variant-ghost-surface text-center">
-				<h3 class="h3 text-secondary-500">Secure</h3>
-				<p>Private by default</p>
+				<h3 class="h3 text-secondary-500">inSecure</h3>
+				<p>Public by default</p>
 			</div>
 			<div class="card p-4 variant-ghost-surface text-center">
 				<h3 class="h3 text-secondary-500">Swift</h3>
