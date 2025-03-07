@@ -171,6 +171,13 @@
 
 		// Add window resize listener
 		if (browser) {
+			if (windowWidth < PHONE_BREAKPOINT) {
+				isPhoneSize = true;
+			}
+			if (windowWidth > PHONE_BREAKPOINT) {
+				isPhoneSize = false;
+			}
+
 			const handleResize = () => {
 				windowWidth = window.innerWidth;
 				if (windowWidth < SMALL_SCREEN_BREAKPOINT) {
