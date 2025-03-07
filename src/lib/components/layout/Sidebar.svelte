@@ -372,7 +372,7 @@
 		</div>
 
 		<!-- Create New Button -->
-		<div class="mt-6 pt-4 border-t border-surface-200 flex-shrink-0">
+		<div class="mt-6 pt-4 border-t border-surface-200 flex-shrink-0 pb-[50px] sm:pb-[0px]">
 			<a
 				href="/new"
 				class="flex items-center justify-center py-2 px-4 bg-indigo-600
