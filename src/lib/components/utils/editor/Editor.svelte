@@ -47,7 +47,8 @@
 	// 	value = '';
 	// }
 
-	async function handlePaste() {
+	async function handlePaste(e: Event) {
+		e.preventDefault();
 		if (!editor) return;
 
 		try {
@@ -136,7 +137,10 @@
 		style="display: {editor ? 'block' : 'none'}"
 	>
 		<button
-			onclick={() => editor?.chain().focus().toggleBold().run()}
+			onclick={(event) => {
+				event.preventDefault();
+				editor?.chain().focus().toggleBold().run();
+			}}
 			class:is-active={isBoldActive}
 			aria-label="Bold"
 		>
@@ -148,7 +152,10 @@
 			>
 		</button>
 		<button
-			onclick={() => editor?.chain().focus().toggleItalic().run()}
+			onclick={(event) => {
+				event.preventDefault();
+				editor?.chain().focus().toggleItalic().run();
+			}}
 			class:is-active={isItalicActive}
 			aria-label="Italic"
 		>
@@ -157,7 +164,10 @@
 			>
 		</button>
 		<button
-			onclick={() => editor?.chain().focus().toggleStrike().run()}
+			onclick={(event) => {
+				event.preventDefault();
+				editor?.chain().focus().toggleStrike().run();
+			}}
 			class:is-active={isStrikeActive}
 			aria-label="Strikethrough"
 		>
@@ -166,7 +176,10 @@
 			>
 		</button>
 		<button
-			onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
+			onclick={(event) => {
+				event.preventDefault();
+				editor?.chain().focus().toggleCodeBlock().run();
+			}}
 			class:is-active={isCodeBlockActive}
 			aria-label="Code Block"
 		>
@@ -198,7 +211,10 @@
 			>
 		</button>
 		<button
-			onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
+			onclick={(event) => {
+				event.preventDefault();
+				editor?.chain().focus().toggleCodeBlock().run();
+			}}
 			class:is-active={isCodeBlockActive}
 			class="chip variant-filled"
 			aria-label="Code Block"
@@ -216,7 +232,10 @@
 		</button>
 
 		<button
-			onclick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+			onclick={(event) => {
+				event.preventDefault();
+				editor?.chain().focus().toggleHeading({ level: 1 }).run();
+			}}
 			class:is-active={isHeading1Active}
 			class="chip variant-filled"
 			aria-label="H1"
@@ -226,7 +245,10 @@
 			>
 		</button>
 		<button
-			onclick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+			onclick={(event) => {
+				event.preventDefault();
+				editor?.chain().focus().toggleHeading({ level: 2 }).run();
+			}}
 			class="chip variant-filled"
 			aria-label="H2"
 			class:is-active={isHeading2Active}
@@ -239,7 +261,10 @@
 			>
 		</button>
 		<button
-			onclick={() => editor?.chain().focus().toggleBulletList().run()}
+			onclick={(event) => {
+				event.preventDefault();
+				editor?.chain().focus().toggleBulletList().run();
+			}}
 			class="chip variant-filled"
 			class:is-active={isBulletListActive}
 			aria-label="Bullet List"

@@ -29,11 +29,11 @@
 		$pastesData.filter((paste) => paste.title.toLowerCase().includes(searchQuery.toLowerCase()))
 	);
 
-	let adjustedWidth = $derived(isOpen && isPhoneSize ? 0 : width);
+	let adjustedWidth = $derived(isOpen && isPhoneSize ? 4 : width);
 
 	// Constants
-	const SMALL_SCREEN_BREAKPOINT = 768;
-	const PHONE_BREAKPOINT = 400;
+	const SMALL_SCREEN_BREAKPOINT = 850;
+	const PHONE_BREAKPOINT = 630;
 	const ANIMATION_DURATION = 300; // ms
 
 	// Smart fetch function that only loads data if needed
@@ -197,11 +197,14 @@
 </script>
 
 <aside
-	class="sidebar fixed top-0 left-0 h-screen overflow-hidden
+	class="sidebar fixed top-0 left-0 h-screen flex flex-col
     border-r-2 border-surface-600 bg-surface-900 shadow-sm z-50"
 	style="width: {width}rem"
 >
-	<div class="flex h-full flex-col" style="padding: {isOpen ? '1.5rem' : '0.5rem'};">
+	<div
+		class="flex h-full flex-col overflow-hidden"
+		style="padding: {isOpen ? '1.5rem' : '0.5rem'};"
+	>
 		<!-- Toggle Button -->
 		<button
 			class="absolute top-4 {isOpen
