@@ -2,11 +2,12 @@
 	import '../app.postcss';
 	import { gsap } from 'gsap';
 	import { navigating } from '$app/stores';
+	import NewPasteModel from '$lib/components/NewPasteModel.svelte';
 
 	// Existing imports
 	import hljs from 'highlight.js/lib/core';
 	import 'highlight.js/styles/github-dark.css';
-	import { storeHighlightJs, CodeBlock } from '@skeletonlabs/skeleton';
+	import { storeHighlightJs } from '@skeletonlabs/skeleton';
 	import xml from 'highlight.js/lib/languages/xml';
 	import css from 'highlight.js/lib/languages/css';
 	import javascript from 'highlight.js/lib/languages/javascript';
@@ -20,7 +21,7 @@
 	storeHighlightJs.set(hljs);
 	import 'highlight.js/styles/github-dark.css';
 
-	import { initializeStores, Toast } from '@skeletonlabs/skeleton';
+	import { initializeStores, Toast, Modal, type ModalComponent } from '@skeletonlabs/skeleton';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 
 	initializeStores();
@@ -36,6 +37,12 @@
 	function handleToggle(e: CustomEvent<{ isOpen: boolean }>) {
 		sidebarOpen = e.detail.isOpen;
 	}
+
+	const modalRegistry: Record<string, ModalComponent> = {
+		// Set a unique modal ID, then pass the component reference
+		newPasteModel: { ref: NewPasteModel }
+		// ...
+	};
 
 	// Page transition logic with GSAP
 	$: if ($navigating) {
@@ -69,3 +76,4 @@
 		</div>
 	</main>
 </div>
+<Modal components={modalRegistry} />

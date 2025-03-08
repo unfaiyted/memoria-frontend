@@ -34,10 +34,6 @@
 			return;
 		}
 
-		// Construct new URL with password as query parameter
-
-		// Navigate to the new URL
-		// goto(`/paste/${id}?pw=${passwordInput}`);
 		if (id !== null) loadPaste(id, passwordInput);
 	}
 
@@ -53,10 +49,10 @@
 			console.log(err);
 			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 
-			toastStore.trigger({
-				message: 'Failed to load paste: ' + errorMessage,
-				background: 'variant-filled-error'
-			});
+			// toastStore.trigger({
+			// 	message: 'Failed to load paste: ' + errorMessage,
+			// 	background: 'variant-filled-error'
+			// });
 		}
 	}
 

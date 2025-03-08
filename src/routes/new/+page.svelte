@@ -6,7 +6,9 @@
 	import { goto } from '$app/navigation';
 	import { popup, getToastStore, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { type CreatePasteRequest, type Paste } from '$lib/api/types';
+	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton';
 
+	const modalStore = getModalStore();
 	const toastStore = getToastStore();
 	// Form state
 	let title = '';
@@ -86,22 +88,33 @@
 			const result: Paste | null = await pastesStore.createPaste(pasteData);
 
 			if (result) {
-				toastStore.trigger({
-					message: 'Paste created successfully!',
-					background: 'variant-filled-success'
-				});
+				// toastStore.trigger({
+				// 	message: 'Paste created successfully!',
+				// 	background: 'variant-filled-success'
+				// });
 
 				if (privacy === 'private') {
 					pasteStorage.addPasteAccessId(result.privateAccessId);
 				}
 
+				const modal: ModalSettings = {
+					type: 'component',
+					component: 'newPasteModel',
+					title: 'Success',
+					value: 'https://prd.ad/a39X2s (fake)',
+					body: 'Past created! Here is a short url for easy sharing',
+					response: () => {
+						if (password == '' && privacy == 'public') goto(`/paste/${result.id}`);
+						if (password == '' && privacy == 'private')
+							goto(`/paste/private/${result.privateAccessId}`);
+						if (password != '' && privacy == 'public') goto(`/paste/${result.id}?pw=${password}`);
+						if (password != '' && privacy == 'private')
+							goto(`/paste/private/${result.privateAccessId}?pw=${password}`);
+					}
+				};
+
+				modalStore.trigger(modal);
 				// Navigate to the new paste
-				if (password == '' && privacy == 'public') goto(`/paste/${result.id}`);
-				if (password == '' && privacy == 'private')
-					goto(`/paste/private/${result.privateAccessId}`);
-				if (password != '' && privacy == 'public') goto(`/paste/${result.id}?pw=${password}`);
-				if (password != '' && privacy == 'private')
-					goto(`/paste/private/${result.privateAccessId}?pw=${password}`);
 			}
 		} catch (error) {
 			toastStore.trigger({
