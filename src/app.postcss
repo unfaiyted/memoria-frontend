@@ -12,10 +12,6 @@ body {
 
 .tiptap {
 
-
-
-
-
   min-height: 200px;
   padding: 15px;
   :first-child {
@@ -34,10 +30,6 @@ body {
 		right: 0.5rem;
 		top: 0.5rem;
 	}
-
-
-
-
 
   /* List styles */
   ul, 
@@ -90,15 +82,17 @@ body {
 
   /* Code and preformatted text styles */
   code {
-    @apply codeblock overflow-hidden shadow bg-neutral-900/90  text-sm text-white rounded-container-token shadow;
+    /* codeblock overflow-hidden  bg-neutral-900/90  text-sm text-white rounded-container-token shadow;*/
+
+    @apply codeblock;
+    @apply overflow-hidden;
     border-radius: 0.4rem;
     font-size: 0.85rem;
     padding: 0.25em 0.3em;
   }
 
   pre {
-
-    @apply codeblock overflow-hidden shadow bg-neutral-900/90  text-sm text-white rounded-container-token shadow;
+    /*  codeblock overflow-hidden  bg-neutral-900/90  text-sm text-white rounded-container-token shadow; */
     border-radius: 0.5rem;
     font-family: 'JetBrainsMono', monospace;
     margin: 1.5rem 0;

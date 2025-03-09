@@ -7,6 +7,9 @@
 	import { popup, getToastStore, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { type CreatePasteRequest, type Paste } from '$lib/api/types';
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton';
+	import Icon from '$lib/components/utils/Icon.svelte';
+	import { detectOS } from '$lib/utils/helpers';
+	import { OperatingSystem } from '$lib/utils/helpers';
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -18,6 +21,8 @@
 	let isPrivate = false;
 	let isLoading = false;
 	let isCodeEditor = true;
+
+	let osDetected = detectOS();
 
 	// Expiration options
 	const expirationOptions = [
@@ -88,20 +93,20 @@
 			const result: Paste | null = await pastesStore.createPaste(pasteData);
 
 			if (result) {
-				// toastStore.trigger({
-				// 	message: 'Paste created successfully!',
-				// 	background: 'variant-filled-success'
-				// });
-
-				if (privacy === 'private') {
+				if (privacy === 'private' && result.privateAccessId) {
 					pasteStorage.addPasteAccessId(result.privateAccessId);
+				} else {
+					toastStore.trigger({
+						message: 'Paste missing access id ',
+						background: 'variant-filled-error'
+					});
 				}
 
 				const modal: ModalSettings = {
 					type: 'component',
 					component: 'newPasteModel',
 					title: 'Success',
-					value: 'https://prd.ad/a39X2s (fake)',
+					value: 'https://prt.ad/a39X2s (fake)',
 					body: 'Past created! Here is a short url for easy sharing',
 					response: () => {
 						if (password == '' && privacy == 'public') goto(`/paste/${result.id}`);
@@ -147,7 +152,12 @@
 				<!-- Editor with content binding -->
 				<header class="pt-4 pl-4 mb-4">
 					<div class="flex justify-between">
-						<div>Press <kbd class="kbd">⌘ + V</kbd> to paste.</div>
+						<div>
+							Press <kbd class="kbd">
+								{#if osDetected === OperatingSystem.MacOS}
+									⌘ + V{:else}CTRL + V{/if}</kbd
+							> to paste.
+						</div>
 						<div class="pr-4">
 							<button
 								class="chip variant-soft hover:variant-filled"
@@ -158,33 +168,9 @@
 							>
 								<span>
 									{#if !isCodeEditor}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="1em"
-											height="1em"
-											viewBox="0 0 24 24"
-											{...$$props}
-											><!-- Icon from All by undefined - undefined --><path
-												fill="currentColor"
-												d="M7 19q-.825 0-1.412-.587T5 17q0-.375.15-.737t.45-.663l10-10q.3-.3.663-.45T17 5q.825 0 1.413.587T19 7q0 .375-.137.75t-.438.675l-10 10q-.3.3-.663.438T7 19"
-											/></svg
-										>
+										<Icon selected="codeblock" />
 									{:else}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="1em"
-											height="1em"
-											viewBox="0 0 24 24"
-											{...$$props}
-											><!-- Icon from CodeX Icons by CodeX - https://github.com/codex-team/icons/blob/master/LICENSE --><path
-												fill="none"
-												stroke="currentColor"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="m9 8l-4 4l4 4m6-8l4 4l-4 4"
-											/></svg
-										>
+										<Icon selected="text" />
 									{/if}
 								</span>
 								<span>Swith Editor</span>
@@ -197,19 +183,7 @@
 									content = '';
 								}}
 							>
-								<span
-									><svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="1em"
-										height="1em"
-										viewBox="0 0 24 24"
-										{...$$props}
-										><!-- Icon from All by undefined - undefined --><path
-											fill="currentColor"
-											d="M7 19q-.825 0-1.412-.587T5 17q0-.375.15-.737t.45-.663l10-10q.3-.3.663-.45T17 5q.825 0 1.413.587T19 7q0 .375-.137.75t-.438.675l-10 10q-.3.3-.663.438T7 19"
-										/></svg
-									></span
-								>
+								<span><Icon selected="clear" /></span>
 								<span>Clear</span>
 							</button>
 						</div>
@@ -223,7 +197,7 @@
 					{/if}
 				</div>
 				<footer class="card-footer border-t-2 pt-3 border-surface-700">
-					<em class="text-xs">Editor can handle code and color coding</em>
+					<em class="text-xs">Editor can swap between code raw mode and formatted input mode</em>
 				</footer>
 			</div>
 		</div>
@@ -277,18 +251,8 @@
 				<label for="private" class="label flex flex-row pl-2">
 					<span class="pr-2">Make paste private</span>
 					<span class="badge-icon variant-filled cursor-auto" use:popup={popupClick}
-						><svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="1em"
-							height="1em"
-							viewBox="0 0 24 24"
-							{...$$props}
-							><!-- Icon from All by undefined - undefined --><path
-								fill="currentColor"
-								d="M10.6 16q0-2.025.363-2.912T12.5 11.15q1.025-.9 1.563-1.562t.537-1.513q0-1.025-.687-1.7T12 5.7q-1.275 0-1.937.775T9.125 8.05L6.55 6.95q.525-1.6 1.925-2.775T12 3q2.625 0 4.038 1.463t1.412 3.512q0 1.25-.537 2.138t-1.688 2.012Q14 13.3 13.738 13.913T13.475 16zm1.4 6q-.825 0-1.412-.587T10 20t.588-1.412T12 18t1.413.588T14 20t-.587 1.413T12 22"
-							/></svg
-						>
-					</span>
+						><Icon selected="private" /></span
+					>
 				</label>
 			</div>
 		</div>

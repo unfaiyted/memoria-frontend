@@ -53,4 +53,3 @@ ENV PORT=3000
 # Start the application
 CMD ["bun", "run", "./build/index.js"]
 
-

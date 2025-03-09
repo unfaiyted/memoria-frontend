@@ -12,6 +12,9 @@ import { usersLoading as loading } from './users';
 import { usersError as error } from './users';
 export { loading, error };
 
+import { usersStore } from './users';
+import { pastesStore } from './pastes';
+
 // Optional: Combined store for convenience
 export const apiStore = {
 	...usersStore,
