@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Editor from '$lib/components/utils/editor/Editor.svelte';
 	import CodeEditor from '$lib/components/utils/editor/CodeEditor.svelte';
+	import { onMount } from 'svelte';
 	import { pastesStore } from '$lib/stores/pastes';
 	import { pasteStorage } from '$lib/data/storage';
 	import { goto } from '$app/navigation';
@@ -22,7 +23,11 @@
 	let isLoading = false;
 	let isCodeEditor = true;
 
-	let osDetected = detectOS();
+	let osDetected = OperatingSystem.Unknown;
+
+	onMount(() => {
+		osDetected = detectOS();
+	});
 
 	// Expiration options
 	const expirationOptions = [
@@ -61,6 +66,7 @@
 	}
 
 	async function handleUpdate(value: string) {
+		// TODO add code editor logic here for type detection
 		content = value;
 	}
 
@@ -155,7 +161,10 @@
 						<div>
 							Press <kbd class="kbd">
 								{#if osDetected === OperatingSystem.MacOS}
-									⌘ + V{:else}CTRL + V{/if}</kbd
+									⌘ + V
+								{:else}
+									CTRL + V
+								{/if}</kbd
 							> to paste.
 						</div>
 						<div class="pr-4">
