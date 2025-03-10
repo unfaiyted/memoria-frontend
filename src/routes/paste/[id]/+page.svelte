@@ -3,7 +3,7 @@
 	import { page } from '$app/stores'; // TODO: Replace with non-deprecated alternative when upgrading
 	import { pastesStore, currentPaste, pastesLoading, pastesError } from '$lib/stores/pastes';
 	import { goto } from '$app/navigation';
-	// import DOMPurify from 'dompurify';
+	import DOMPurify from 'dompurify';
 
 	// Access the ID from the URL parameter with proper type checking
 	$: id = $page.params.id ? parseInt($page.params.id, 10) : null;
@@ -18,11 +18,6 @@
 	// Auth state (would come from auth store in a real implementation)
 	let isLoggedIn = false; // TODO: Replace with actual auth store
 	$: isOwner = $currentPaste?.user_id === 'current-user-id'; // TODO: Replace with actual user ID check
-
-	// Load the paste data when component mounts or ID changes
-	$: if (id !== null) {
-		loadPaste(id);
-	}
 
 	// Function to handle password submission
 	function handlePasswordSubmit(): void {
@@ -48,11 +43,6 @@
 		} catch (err: unknown) {
 			console.log(err);
 			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-
-			// toastStore.trigger({
-			// 	message: 'Failed to load paste: ' + errorMessage,
-			// 	background: 'variant-filled-error'
-			// });
 		}
 	}
 
@@ -185,7 +175,7 @@
 						<div class="chip variant-soft-primary cursor-default">
 							<span>Creator: {$currentPaste.user_id || 'Anonymous'}</span>
 						</div>
-
+						|
 						{#if $currentPaste.expiresAt}
 							<div class="chip variant-soft-warning cursor-default">
 								<span>Expires: {new Date($currentPaste.expiresAt).toLocaleString()}</span>
@@ -223,8 +213,14 @@
 				<!-- For regular content that might contain HTML -->
 				<div class="card p-6 variant-ghost rounded-none">
 					<div class="prose dark:prose-invert max-w-none">
-						<!-- {@html DOMPurify.sanitize($currentPaste.content)} -->
-						<CodeBlock language="javascript" code={$currentPaste.content} />
+						{#if $currentPaste.editorType === 'code'}
+							<CodeBlock
+								language={$currentPaste.syntaxHighlight || 'javascript'}
+								code={$currentPaste.content}
+							/>
+						{:else}
+							{@html DOMPurify.sanitize($currentPaste.content)}
+						{/if}
 					</div>
 				</div>
 				<!-- {/if} -->

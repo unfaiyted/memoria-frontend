@@ -16,7 +16,9 @@
 	const toastStore = getToastStore();
 	// Form state
 	let title = '';
-	let content = '';
+	let sendContent = '';
+	let defaultContent = '';
+	let syntaxHighlighting = 'text';
 	let expiration = '1d'; // Default: 1 day
 	let password = '';
 	let isPrivate = false;
@@ -65,9 +67,10 @@
 		}
 	}
 
-	async function handleUpdate(value: string) {
+	async function handleUpdate(value: string, lang: string = 'text') {
 		// TODO add code editor logic here for type detection
-		content = value;
+		sendContent = value;
+		syntaxHighlighting = lang;
 	}
 
 	// Handle form submission
@@ -82,11 +85,11 @@
 
 			const pasteData: CreatePasteRequest = {
 				title,
-				content,
+				content: sendContent,
 				expiresAt: calculateExpiresAt(expiration),
 				privacy: privacy as 'public' | 'private',
 				editorType: isCodeEditor ? 'code' : 'text',
-				syntaxHighlight: 'auto' // TODO:  Could implement language detection around here
+				syntaxHighlight: syntaxHighlighting || 'text'
 			};
 
 			if (password != '') {
@@ -189,7 +192,8 @@
 								class="chip variant-soft hover:variant-filled"
 								onclick={(e) => {
 									e.preventDefault();
-									content = '';
+									sendContent = '';
+									defaultContent = '';
 								}}
 							>
 								<span><Icon selected="clear" /></span>
@@ -200,9 +204,9 @@
 				</header>
 				<div class="p-2 bg-surface-200-700-token">
 					{#if isCodeEditor}
-						<CodeEditor value={content} onUpdate={handleUpdate} />
+						<CodeEditor value={defaultContent} onUpdate={handleUpdate} />
 					{:else}
-						<Editor value={content} onUpdate={handleUpdate} />
+						<Editor value={defaultContent} onUpdate={handleUpdate} />
 					{/if}
 				</div>
 				<footer class="card-footer border-t-2 pt-3 border-surface-700">

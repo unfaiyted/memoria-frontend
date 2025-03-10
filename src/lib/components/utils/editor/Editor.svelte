@@ -9,8 +9,6 @@
 	import { BubbleMenu } from '@tiptap/extension-bubble-menu';
 	import { FloatingMenu } from '@tiptap/extension-floating-menu';
 
-	// Existing imports
-	// import hljs from 'highlight.js/lib/core';
 	import 'highlight.js/styles/github-dark.css';
 
 	import xml from 'highlight.js/lib/languages/xml';
@@ -19,12 +17,6 @@
 	import ts from 'highlight.js/lib/languages/typescript';
 	import html from 'highlight.js/lib/languages/xml';
 	import { SvelteNodeViewRenderer } from 'svelte-tiptap';
-
-	// Register highlight.js languages
-	// hljs.registerLanguage('xml', xml);
-	// hljs.registerLanguage('css', css);
-	// hljs.registerLanguage('javascript', js);
-	// hljs.registerLanguage('typescript', ts);
 
 	const lowlight = createLowlight(all);
 
@@ -42,11 +34,6 @@
 	let floatingMenuElement = $state<HTMLDivElement>();
 	let isFirstActivation = $state(true);
 	let isUpdatingFromProps = $state(false);
-
-	// TODO: implement clearning
-	// async function handleClear() {
-	// 	value = '';
-	// }
 
 	async function handlePaste(e: Event) {
 		e.preventDefault();
@@ -99,7 +86,6 @@
 			onUpdate: ({ editor }) => {
 				if (isUpdatingFromProps) return;
 				const newContent = editor.getHTML();
-				value = newContent;
 				onUpdate(newContent);
 			},
 			onCreate: ({ editor }) => {

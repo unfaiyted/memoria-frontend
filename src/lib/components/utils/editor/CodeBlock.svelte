@@ -34,11 +34,10 @@
 		<header
 			class="codeblock-header text-xs text-white/50 uppercase flex justify-between items-center pr-4 pt-2 pl-4"
 		>
-			<span class="codeblock-language">(Auto)</span>
+			<span class="codeblock-language">JS</span>
 			<!-- <button type="button" class="codeblock-btn btn btn-sm variant-soft !text-white">Copy</button> -->
 		</header>
-		<pre class=" whitespace-pre-wrap break-all p-4 pt-1"><code
-				class="codeblock-code language-html lineNumbers">
+		<pre class="!mt-0"><code class="codeblock-code language-html">
 	<NodeViewContent />
 	</code></pre>
 	</div>

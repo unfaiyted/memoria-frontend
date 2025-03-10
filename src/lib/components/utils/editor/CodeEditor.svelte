@@ -291,7 +291,7 @@
 		}
 
 		console.log(value);
-		onUpdate(value);
+		onUpdate(value, newLang);
 	});
 </script>
 
