@@ -11,6 +11,7 @@
 	import Icon from '$lib/components/utils/Icon.svelte';
 	import { detectOS } from '$lib/utils/helpers';
 	import { OperatingSystem } from '$lib/utils/helpers';
+	import Layout from '../+layout.svelte';
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -42,6 +43,7 @@
 		{ value: 'python', label: 'Python' },
 		{ value: 'java', label: 'Java' },
 		{ value: 'php', label: 'PHP' },
+		{ value: 'powershell', label: 'Powershell' },
 		{ value: 'sql', label: 'SQL' },
 		{ value: 'markdown', label: 'Markdown' },
 		{ value: 'xml', label: 'XML' },
@@ -51,7 +53,9 @@
 		{ value: 'go', label: 'Go' },
 		{ value: 'ruby', label: 'Ruby' },
 		{ value: 'shell', label: 'Shell/Bash' },
-		{ value: 'yaml', label: 'YAML' }
+		{ value: 'yaml', label: 'YAML' },
+		{ value: 'lua', label: 'Lua' },
+		{ value: 'svelte', label: 'Svelte' }
 	];
 
 	onMount(() => {

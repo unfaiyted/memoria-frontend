@@ -26,6 +26,9 @@
 	import bash from 'highlight.js/lib/languages/bash'; // For shell
 	import yaml from 'highlight.js/lib/languages/yaml';
 	import jsx from 'highlight.js/lib/languages/javascript'; // JSX is handled by javascript with options
+	import lua from 'highlight.js/lib/languages/lua';
+	import powershell from 'highlight.js/lib/languages/powershell';
+	import svelte from '$lib/types/lang-svelte';
 
 	// Register highlight.js languages
 	hljs.registerLanguage('xml', xml);
@@ -50,6 +53,9 @@
 	hljs.registerLanguage('html', xml); // HTML is typically handled by XML highlighter
 	hljs.registerLanguage('jsx', jsx); // JSX uses javascript highlighter
 	hljs.registerLanguage('tsx', typescript); // TSX uses typescript highlighter
+	hljs.registerLanguage('svelte', svelte); // TSX uses typescript highlighter
+	hljs.registerLanguage('lua', lua);
+	hljs.registerLanguage('powershell', powershell);
 
 	storeHighlightJs.set(hljs);
 	import 'highlight.js/styles/github-dark.css';

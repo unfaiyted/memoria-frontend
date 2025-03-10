@@ -1,6 +1,8 @@
 <script lang="ts">
 	import CodeMirror from 'svelte-codemirror-editor';
 	import { EditorView } from '@codemirror/view';
+
+	import { StreamLanguage } from '@codemirror/language';
 	import { javascript } from '@codemirror/lang-javascript';
 	import { oneDark } from '@codemirror/theme-one-dark';
 	import { LanguageSupport } from '@codemirror/language';
@@ -268,11 +270,45 @@
 				case 'go':
 					return import('@codemirror/lang-go').then((m) => m.go());
 				case 'ruby':
-				// return import('@codemirror/lang-ruby').then((m) => m.ruby());
+					return import('@codemirror/legacy-modes/mode/ruby').then(
+						(m) => new LanguageSupport(StreamLanguage.define(m.ruby))
+					);
+				case 'cmake':
+					return import('@codemirror/legacy-modes/mode/cmake').then(
+						(m) => new LanguageSupport(StreamLanguage.define(m.cmake))
+					);
+				case 'nginx':
+					return import('@codemirror/legacy-modes/mode/nginx').then(
+						(m) => new LanguageSupport(StreamLanguage.define(m.nginx))
+					);
+				case 'dockerFile':
+					return import('@codemirror/legacy-modes/mode/dockerfile').then(
+						(m) => new LanguageSupport(StreamLanguage.define(m.dockerFile))
+					);
+				case 'swift':
+					return import('@codemirror/legacy-modes/mode/swift').then(
+						(m) => new LanguageSupport(StreamLanguage.define(m.swift))
+					);
+				case 'r':
+					return import('@codemirror/legacy-modes/mode/r').then(
+						(m) => new LanguageSupport(StreamLanguage.define(m.r))
+					);
+				case 'powershell':
+					return import('@codemirror/legacy-modes/mode/powershell').then(
+						(m) => new LanguageSupport(StreamLanguage.define(m.powerShell))
+					);
 				case 'shell':
-				// return import('@codemirror/lang-shell').then((m) => m.shell());
+					return import('@codemirror/legacy-modes/mode/shell').then(
+						(m) => new LanguageSupport(StreamLanguage.define(m.shell))
+					);
 				case 'yaml':
 					return import('@codemirror/lang-yaml').then((m) => m.yaml());
+				case 'lua':
+					return import('@codemirror/legacy-modes/mode/lua').then(
+						(m) => new LanguageSupport(StreamLanguage.define(m.lua))
+					);
+				case 'svelte':
+					return import('@replit/codemirror-lang-svelte').then((m) => m.svelte());
 				default:
 					return javascript(); // Fallback
 			}
