@@ -22,6 +22,25 @@ interface PastesState extends BaseApiState {
 
 // Create the pastes store
 function createPastesStore() {
+	// Add this function inside createPastesStore before the return statement
+	function mergePastes(existingPastes: Paste[], newPastes: Paste[]): Paste[] {
+		// Create a map of existing pastes by id for quick lookup
+		const pasteMap = new Map<number, Paste>();
+
+		// Add all existing pastes to the map
+		existingPastes.forEach((paste) => {
+			pasteMap.set(paste.id, paste);
+		});
+
+		// Add or update with new pastes
+		newPastes.forEach((paste) => {
+			pasteMap.set(paste.id, paste);
+		});
+
+		// Convert the map back to an array
+		return Array.from(pasteMap.values());
+	}
+
 	const store = createBaseStore<PastesState>({
 		pastes: [],
 		currentPaste: null,
@@ -31,7 +50,7 @@ function createPastesStore() {
 
 	return {
 		...store,
-		async fetchAllPastes(page?: number, limit?: number) {
+		async fetchAllPublicPastes(page?: number, limit?: number) {
 			store.setLoading(true);
 			try {
 				const response = await GET('/paste/all', {
@@ -49,12 +68,70 @@ function createPastesStore() {
 				if (data && data.data) {
 					store.update((state) => ({
 						...state,
-						pastes: data?.data?.pastes || [],
+						pastes: mergePastes(state.pastes, data?.data?.pastes || []),
 						loading: false
 					}));
 				}
 			} catch (err) {
 				store.setError(err);
+			}
+		},
+
+		async fetchAllPrivatePastes(accessIds: string[]) {
+			store.setLoading(true);
+			try {
+				const response = await POST('/paste/private/batch', {
+					body: { accessIds: accessIds.join(',') }
+				});
+				if (response.error) {
+					const errorData = response.error as ErrorResponse;
+					// TODO: add status to backend type
+					const status = response.error?.status || 500;
+					throw new ApiError(errorData, status);
+				}
+				const data = response.data as PasteListResponse;
+				if (data && data.data) {
+					store.update((state) => ({
+						...state,
+						pastes: mergePastes(state.pastes, data?.data?.pastes || []),
+						loading: false
+					}));
+				}
+			} catch (err) {
+				store.setError(err);
+			}
+		},
+		async fetchPrivatePaste(accessId: string, pw: string | null): Promise<Paste | null> {
+			store.setLoading(true);
+			try {
+				const response = await GET('/paste/private/{accessId}', {
+					params: {
+						path: { accessId },
+						...(pw !== null ? { query: { pw } } : {})
+					}
+				});
+				if (response.error) {
+					const errorData = response.error as ErrorResponse;
+					// TODO: add status to backend type
+					const status = response.error?.status || 500;
+					throw new ApiError(errorData, status);
+				}
+
+				const data = response.data as PasteResponse;
+				if (data && data.data && data.data.paste) {
+					store.update((state) => ({
+						...state,
+						currentPaste: data?.data?.paste,
+						loading: false
+					}));
+
+					return data.data.paste;
+				}
+				return null;
+			} catch (err) {
+				console.log('err-catch', err);
+				store.setError(err);
+				throw err;
 			}
 		},
 

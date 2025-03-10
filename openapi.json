@@ -270,7 +270,59 @@
         }
       }
     },
-    "/paste/private/{access_id}": {
+    "/paste/private/batch": {
+      "post": {
+        "description": "Retrieve multiple pastes by providing a comma-separated list of private access IDs",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Gets multiple pastes using their private access IDs",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/models.PrivateAccessIDsRequest"
+              }
+            }
+          },
+          "description": "List of private access IDs",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success response with list of pastes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteListData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paste/private/{accessId}": {
       "get": {
         "description": "Retrieve a private paste by its private access ID",
         "tags": [
@@ -280,9 +332,17 @@
         "parameters": [
           {
             "description": "Private Access ID",
-            "name": "access_id",
+            "name": "accessId",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Password for protected pastes",
+            "name": "pw",
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -727,7 +787,12 @@
             "type": "string"
           },
           "editorType": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "code",
+              "text"
+            ],
+            "example": "code"
           },
           "expiresAt": {
             "type": "string",
@@ -844,6 +909,7 @@
         "type": "object",
         "required": [
           "content",
+          "editorType",
           "id",
           "privacy",
           "syntaxHighlight",
@@ -860,7 +926,11 @@
           },
           "editorType": {
             "type": "string",
-            "example": "vscode"
+            "enum": [
+              "code",
+              "text"
+            ],
+            "example": "code"
           },
           "expiresAt": {
             "type": "string",
@@ -917,6 +987,18 @@
             "items": {
               "$ref": "#/components/schemas/models.Paste"
             }
+          }
+        }
+      },
+      "models.PrivateAccessIDsRequest": {
+        "type": "object",
+        "required": [
+          "accessIds"
+        ],
+        "properties": {
+          "accessIds": {
+            "type": "string",
+            "example": "abc123,def456,ghi789"
           }
         }
       },

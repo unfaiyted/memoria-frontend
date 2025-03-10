@@ -275,7 +275,69 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/paste/private/{access_id}": {
+    "/paste/private/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Gets multiple pastes using their private access IDs
+         * @description Retrieve multiple pastes by providing a comma-separated list of private access IDs
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description List of private access IDs */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.PrivateAccessIDsRequest"];
+                };
+            };
+            responses: {
+                /** @description Success response with list of pastes */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.APIResponse-models_PasteListData"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/paste/private/{accessId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -288,11 +350,14 @@ export interface paths {
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Password for protected pastes */
+                    pw?: string;
+                };
                 header?: never;
                 path: {
                     /** @description Private Access ID */
-                    access_id: string;
+                    accessId: string;
                 };
                 cookie?: never;
             };
@@ -696,7 +761,11 @@ export interface components {
         };
         "models.CreatePasteRequest": {
             content: string;
-            editorType?: string;
+            /**
+             * @example code
+             * @enum {string}
+             */
+            editorType?: "code" | "text";
             /** @example 2023-01-08T00:00:00Z */
             expiresAt?: string;
             /** @example mySecurePassword123 */
@@ -737,8 +806,11 @@ export interface components {
             content: string;
             /** @example 2023-01-01T00:00:00Z */
             createdAt?: string;
-            /** @example vscode */
-            editorType?: string;
+            /**
+             * @example code
+             * @enum {string}
+             */
+            editorType: "code" | "text";
             /** @example 2023-01-08T00:00:00Z */
             expiresAt?: string;
             /** @example 123111 */
@@ -765,6 +837,10 @@ export interface components {
         "models.PasteListData": {
             count?: number;
             pastes?: components["schemas"]["models.Paste"][];
+        };
+        "models.PrivateAccessIDsRequest": {
+            /** @example abc123,def456,ghi789 */
+            accessIds: string;
         };
         "models.UpdatePasteRequest": {
             content: string;

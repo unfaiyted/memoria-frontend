@@ -2,6 +2,7 @@
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { pastesStore, pastes as pastesData, pastesLoading } from '$lib/stores/pastes';
+	import { pasteStorage } from '$lib/data/storage';
 	import PasteGroup from '$lib/components/layout/sidebar/PasteGroup.svelte';
 	import { browser } from '$app/environment';
 	import { afterNavigate, onNavigate } from '$app/navigation';
@@ -39,7 +40,12 @@
 	// Smart fetch function that only loads data if needed
 	async function smartFetchPastes() {
 		if ($pastesData.length === 0 || Date.now() - lastFetchTime > refreshInterval) {
-			await pastesStore.fetchAllPastes();
+			await pastesStore.fetchAllPublicPastes();
+
+			const accessIds = pasteStorage.getPasteAccessIds();
+			if (accessIds.length > 0) {
+				await pastesStore.fetchAllPrivatePastes(accessIds);
+			}
 			lastFetchTime = Date.now();
 		}
 	}
@@ -58,14 +64,6 @@
 			animateWidth();
 		}
 	});
-
-	// Monitor page changes to potentially update data without full reloads
-	// $effect(() => {
-	// 	// When navigation completes (navigating becomes null)
-	// 	if (navigating === null && browser && initialFetchDone) {
-	// 		smartFetchPastes();
-	// 	}
-	// });
 
 	onNavigate(() => {
 		// navigationComplete = false;
@@ -116,6 +114,7 @@
 
 	// Handler for paste clicks
 	interface GroupedPastes {
+		private: Paste[];
 		today: Paste[];
 		yesterday: Paste[];
 		older: Paste[];
@@ -129,14 +128,27 @@
 		const yesterday = new Date(today);
 		yesterday.setDate(yesterday.getDate() - 1);
 
+		// Get private access storage id's
+		const privateAccessIds = pasteStorage.getPasteAccessIds();
+
 		// Helper function to sort pastes by created_at in descending order
 		const sortByDateDesc = (a: Paste, b: Paste) => {
 			return new Date(b.createdAt as string).getTime() - new Date(a.createdAt as string).getTime();
 		};
 
+		// identify private pastes
+		const privatePastes = pasteList
+			.filter(
+				(paste) =>
+					paste.privacy == 'private' && privateAccessIds.includes(paste.privateAccessId || '')
+			)
+			.sort(sortByDateDesc);
+
 		return {
+			private: privatePastes,
 			today: pasteList
 				.filter((paste) => new Date(paste.createdAt as string) >= today)
+				.filter((paste) => paste.privacy != 'private')
 				.sort(sortByDateDesc),
 			yesterday: pasteList
 				.filter(
@@ -144,9 +156,11 @@
 						new Date(paste.createdAt as string) >= yesterday &&
 						new Date(paste.createdAt as string) < today
 				)
+				.filter((paste) => paste.privacy != 'private')
 				.sort(sortByDateDesc),
 			older: pasteList
 				.filter((paste) => new Date(paste.createdAt as string) < yesterday)
+				.filter((paste) => paste.privacy != 'private')
 				.sort(sortByDateDesc)
 		};
 	}
@@ -178,7 +192,9 @@
 
 	// Setup code
 	onMount(() => {
-		pastesStore.fetchAllPastes();
+		const privateAccessIds = pasteStorage.getPasteAccessIds();
+		pastesStore.fetchAllPublicPastes();
+		pastesStore.fetchAllPrivatePastes(privateAccessIds);
 
 		// Add window resize listener
 		if (browser) {
@@ -346,14 +362,14 @@
 				</div>
 			{:else}
 				<div class="max-w-[210px]">
-					<!-- Today -->
-					<!-- <PasteGroup -->
-					<!-- pastes={sortedPrivatePastes} -->
-					<!-- 	groupTitle="Private" -->
-					<!-- 	{isOpen} -->
-					<!-- 	variant="primary" -->
-					<!-- 	onPasteClick={handlePasteClick} -->
-					<!-- /> -->
+					<!-- Private -->
+					<PasteGroup
+						pastes={groupedPastes.private}
+						groupTitle="Private"
+						{isOpen}
+						variant="primary"
+						onPasteClick={handlePasteClick}
+					/>
 
 					<!-- Today -->
 					<PasteGroup

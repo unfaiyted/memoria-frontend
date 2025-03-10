@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { getToastStore, CodeBlock } from '@skeletonlabs/skeleton';
 	import { page } from '$app/stores'; // TODO: Replace with non-deprecated alternative when upgrading
 	import { pastesStore, currentPaste, pastesLoading, pastesError } from '$lib/stores/pastes';
 	import { goto } from '$app/navigation';
 	import DOMPurify from 'dompurify';
+	import { ProgressRadial } from '@skeletonlabs/skeleton';
 
 	// Access the ID from the URL parameter with proper type checking
 	$: id = $page.params.id ? parseInt($page.params.id, 10) : null;
@@ -18,6 +20,49 @@
 	// Auth state (would come from auth store in a real implementation)
 	let isLoggedIn = false; // TODO: Replace with actual auth store
 	$: isOwner = $currentPaste?.user_id === 'current-user-id'; // TODO: Replace with actual user ID check
+
+	function calculateTimeLeftPercentage(createdAt: string | Date, expiresAt: string | Date): number {
+		const created = new Date(createdAt);
+		const expires = new Date(expiresAt);
+		const now = new Date();
+
+		const totalDuration = expires.getTime() - created.getTime();
+		const elapsed = now.getTime() - created.getTime();
+
+		// If already expired, return 0
+		if (now > expires) return 0;
+
+		// Calculate percentage of time left
+		const timeLeftPercentage = 100 - (elapsed / totalDuration) * 100;
+
+		return Math.max(0, Math.round(timeLeftPercentage));
+	}
+
+	function formatTimeLeft(expiresAt: string | Date): string {
+		const expires = new Date(expiresAt);
+		const now = new Date();
+		const timeLeftMs = expires.getTime() - now.getTime();
+
+		// If already expired
+		if (timeLeftMs <= 0) return 'Expired';
+
+		// Calculate time units
+		const seconds = Math.floor(timeLeftMs / 1000) % 60;
+		const minutes = Math.floor(timeLeftMs / (1000 * 60)) % 60;
+		const hours = Math.floor(timeLeftMs / (1000 * 60 * 60)) % 24;
+		const days = Math.floor(timeLeftMs / (1000 * 60 * 60 * 24));
+
+		// Format based on the largest significant time unit
+		if (days > 0) {
+			return `${days} ${days === 1 ? 'day' : 'days'} left`;
+		} else if (hours > 0) {
+			return `${hours} ${hours === 1 ? 'hr' : 'hrs'} left`;
+		} else if (minutes > 0) {
+			return `${minutes} ${minutes === 1 ? 'min' : 'mins'} left`;
+		} else {
+			return `${seconds} ${seconds === 1 ? 'sec' : 'secs'} left`;
+		}
+	}
 
 	// Function to handle password submission
 	function handlePasswordSubmit(): void {
@@ -87,9 +132,23 @@
 			}
 		}
 	}
+
+	let isScrolled = false;
+	let scrollDistance = 0;
+
+	onMount(() => {
+		const handleScroll = () => {
+			isScrolled = window.scrollY > 200;
+			scrollDistance = window.scrollY - 150;
+			console.log(isScrolled);
+		};
+
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	});
 </script>
 
-<div class="container mx-auto p-6 max-w-5xl">
+<div class="container mx-auto p-2 sm:p-6 max-w-5xl">
 	<!-- Breadcrumbs navigation -->
 	<nav class="breadcrumb mb-4">
 		<ol class="flex items-center space-x-2 text-sm">
@@ -165,45 +224,75 @@
 			</div>
 		{/if}
 	{:else if $currentPaste}
-		<div class="card variant-filled-surface shadow-xl">
+		<div class="card variant-ghost-surface shadow-xl relative">
+			<!-- Float button -->
+			<button
+				class="btn-icon variant-filled-secondary float-button"
+				style={isScrolled ? `top: calc(1rem + ${scrollDistance}px);` : ''}
+				title="Copy to clipboard"
+				aria-label="Copy to clipboard"
+				onclick={copyToClipboard}
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+					<path
+						fill="currentColor"
+						d="M5 22q-.825 0-1.413-.588T3 20V6h2v14h11v2H5Zm4-4q-.825 0-1.413-.588T7 16V4q0-.825.588-1.413T9 2h9q.825 0 1.413.588T20 4v12q0 .825-.588 1.413T18 18H9Zm0-2h9V4H9v12Zm0 0V4v12Z"
+					/>
+				</svg>
+			</button>
 			<!-- Card Header with metadata -->
-			<header class="card-header p-6 flex flex-col sm:flex-row justify-between gap-4">
-				<div class="space-y-4 flex-1">
-					<h2 class="h2 font-bold">{$currentPaste.title}</h2>
-
-					<div class="flex flex-wrap gap-3">
-						<div class="chip variant-soft-primary cursor-default">
+			<header
+				class="card-header p-6 flex flex-col sm:flex-row justify-items-start text-center sm:text-left gap-4"
+			>
+				<div class="space-y-4 flex-1 flex flex-col sm:flex-row sm:justify-start">
+					<div
+						class="space-y-4 flex flex-col sm:flex-row sm:items-center justify-between order-2 w-full"
+					>
+						<h2 class="h2 font-bold pt-3 sm:pt-0 sm:pl-4">{$currentPaste.title}</h2>
+						<div class="chip variant-soft-primary cursor-default max-h-8">
 							<span>Creator: {$currentPaste.user_id || 'Anonymous'}</span>
 						</div>
-						|
-						{#if $currentPaste.expiresAt}
-							<div class="chip variant-soft-warning cursor-default">
-								<span>Expires: {new Date($currentPaste.expiresAt).toLocaleString()}</span>
-							</div>
-						{/if}
-
-						{#if $currentPaste.createdAt}
-							<div class="chip variant-soft-primary cursor-default">
-								<span>Created: {new Date($currentPaste.createdAt).toLocaleString()}</span>
-							</div>
-						{/if}
-
-						<!-- {#if $currentPaste.syntax_highlight} -->
-						<!-- 	<div class="chip variant-soft-tertiary"> -->
-						<!-- 		<span>Syntax: {$currentPaste.syntax_highlight}</span> -->
+					</div>
+					<div class="flex flex-wrap gap-3 order-1 mx-auto sm:mx-0 sm:max-w-30">
+						<!-- {#if $currentPaste.expiresAt} -->
+						<!-- 	<div class="chip variant-soft-warning cursor-default"> -->
+						<!-- 		<span>Expires: {new Date($currentPaste.expiresAt).toLocaleString()}</span> -->
 						<!-- 	</div> -->
 						<!-- {/if} -->
+						<!---->
+						<!-- {#if $currentPaste.createdAt} -->
+						<!-- 	<div class="chip variant-soft-primary cursor-default"> -->
+						<!-- 		<span>Created: {new Date($currentPaste.createdAt).toLocaleString()}</span> -->
+						<!-- 	</div> -->
+						<!-- {/if} -->
+
+						{#if $currentPaste.createdAt && $currentPaste.expiresAt}
+							<div>
+								<ProgressRadial
+									value={calculateTimeLeftPercentage(
+										$currentPaste.createdAt,
+										$currentPaste.expiresAt
+									)}
+									width="w-24"
+									stroke={50}
+									meter="stroke-primary-500"
+									track="stroke-primary-500/30"
+								>
+									{formatTimeLeft($currentPaste.expiresAt)}
+								</ProgressRadial>
+							</div>
+						{/if}
 					</div>
 				</div>
 
-				<div class="flex flex-wrap gap-2 self-end sm:self-auto">
-					{#if isLoggedIn && isOwner}
-						<button class="btn variant-filled-error" onclick={deletePaste}>
-							<span class="material-symbols-outlined mr-2">delete</span>
-							Delete
-						</button>
-					{/if}
-				</div>
+				<!-- <div class="flex flex-wrap gap-2 self-end sm:self-auto"> -->
+				<!-- 	{#if isLoggedIn && isOwner} -->
+				<!-- 		<button class="btn variant-filled-error" onclick={deletePaste}> -->
+				<!-- 			<span class="material-symbols-outlined mr-2">delete</span> -->
+				<!-- 			Delete -->
+				<!-- 		</button> -->
+				<!-- 	{/if} -->
+				<!-- </div> -->
 			</header>
 
 			<hr class="opacity-50" />
@@ -211,8 +300,8 @@
 			<!-- Content display, with HTML parsing or code block depending on type -->
 			<div class="p-0">
 				<!-- For regular content that might contain HTML -->
-				<div class="card p-6 variant-ghost rounded-none">
-					<div class="prose dark:prose-invert max-w-none">
+				<div class="paste-card card p-1 md:p-6 variant-filled-surface rounded-t-none rounded-md">
+					<div class="prose dark:prose-invert max-w-none marker:text-white">
 						{#if $currentPaste.editorType === 'code'}
 							<CodeBlock
 								language={$currentPaste.syntaxHighlight || 'javascript'}
@@ -239,3 +328,13 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.float-button {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		z-index: 10;
+		transition: all 0.3s ease;
+	}
+</style>
