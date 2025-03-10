@@ -12,12 +12,45 @@
 	import css from 'highlight.js/lib/languages/css';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
+	// Additional language imports
+	import python from 'highlight.js/lib/languages/python';
+	import java from 'highlight.js/lib/languages/java';
+	import php from 'highlight.js/lib/languages/php';
+	import sql from 'highlight.js/lib/languages/sql';
+	import markdown from 'highlight.js/lib/languages/markdown';
+	import json from 'highlight.js/lib/languages/json';
+	import cpp from 'highlight.js/lib/languages/cpp';
+	import rust from 'highlight.js/lib/languages/rust';
+	import go from 'highlight.js/lib/languages/go';
+	import ruby from 'highlight.js/lib/languages/ruby';
+	import bash from 'highlight.js/lib/languages/bash'; // For shell
+	import yaml from 'highlight.js/lib/languages/yaml';
+	import jsx from 'highlight.js/lib/languages/javascript'; // JSX is handled by javascript with options
 
 	// Register highlight.js languages
 	hljs.registerLanguage('xml', xml);
 	hljs.registerLanguage('css', css);
 	hljs.registerLanguage('javascript', javascript);
 	hljs.registerLanguage('typescript', typescript);
+
+	// Register additional languages
+	hljs.registerLanguage('python', python);
+	hljs.registerLanguage('java', java);
+	hljs.registerLanguage('php', php);
+	hljs.registerLanguage('sql', sql);
+	hljs.registerLanguage('markdown', markdown);
+	hljs.registerLanguage('json', json);
+	hljs.registerLanguage('cpp', cpp);
+	hljs.registerLanguage('rust', rust);
+	hljs.registerLanguage('go', go);
+	hljs.registerLanguage('ruby', ruby);
+	hljs.registerLanguage('bash', bash); // Register as 'bash' for shell scripts
+	hljs.registerLanguage('shell', bash); // Also register as 'shell' for compatibility
+	hljs.registerLanguage('yaml', yaml);
+	hljs.registerLanguage('html', xml); // HTML is typically handled by XML highlighter
+	hljs.registerLanguage('jsx', jsx); // JSX uses javascript highlighter
+	hljs.registerLanguage('tsx', typescript); // TSX uses typescript highlighter
+
 	storeHighlightJs.set(hljs);
 	import 'highlight.js/styles/github-dark.css';
 

@@ -112,27 +112,27 @@
 	}
 
 	// Delete the paste using the store
-	async function deletePaste(): Promise<void> {
-		if (!$currentPaste) return;
-
-		if (confirm('Are you sure you want to delete this paste? This action cannot be undone.')) {
-			try {
-				await pastesStore.deletePaste($currentPaste.id);
-				toastStore.trigger({
-					message: 'Paste deleted successfully',
-					background: 'variant-filled-success'
-				});
-				// Redirect to home page after deletion
-				goto('/');
-			} catch (err: unknown) {
-				const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-				toastStore.trigger({
-					message: 'Failed to delete paste: ' + errorMessage,
-					background: 'variant-filled-error'
-				});
-			}
-		}
-	}
+	// async function deletePaste(): Promise<void> {
+	// 	if (!$currentPaste) return;
+	//
+	// 	if (confirm('Are you sure you want to delete this paste? This action cannot be undone.')) {
+	// 		try {
+	// 			await pastesStore.deletePaste($currentPaste.id);
+	// 			toastStore.trigger({
+	// 				message: 'Paste deleted successfully',
+	// 				background: 'variant-filled-success'
+	// 			});
+	// 			// Redirect to home page after deletion
+	// 			goto('/');
+	// 		} catch (err: unknown) {
+	// 			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+	// 			toastStore.trigger({
+	// 				message: 'Failed to delete paste: ' + errorMessage,
+	// 				background: 'variant-filled-error'
+	// 			});
+	// 		}
+	// 	}
+	// }
 
 	let isScrolled = false;
 	let scrollDistance = 0;
@@ -201,7 +201,16 @@
 									/></svg
 								>
 							</div>
-							<input type="search" placeholder="Enter password..." bind:value={passwordInput} />
+							<input
+								type="password"
+								placeholder="Enter password..."
+								bind:value={passwordInput}
+								onkeypress={(e) => {
+									if (e.key === 'Enter') {
+										handlePasswordSubmit();
+									}
+								}}
+							/>
 							<button
 								class="variant-filled-secondary text-center h-[32px] md:h-[auto]"
 								onclick={handlePasswordSubmit}>Submit</button

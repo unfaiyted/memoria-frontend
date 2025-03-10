@@ -1,14 +1,28 @@
 <script lang="ts">
 	import CodeMirror from 'svelte-codemirror-editor';
+	import { EditorView } from '@codemirror/view';
 	import { javascript } from '@codemirror/lang-javascript';
 	import { oneDark } from '@codemirror/theme-one-dark';
 	import { LanguageSupport } from '@codemirror/language';
+	import { onMount } from 'svelte';
 
 	let {
 		value = '',
 		onUpdate = () => {},
 		language = '' // Optional language override
 	} = $props();
+
+	// Create a ref for the CodeMirror component
+	let view = $state<EditorView | null>(null);
+
+	$effect(() => {
+		if (view) {
+			// Small delay to ensure the editor is fully rendered
+			setTimeout(() => {
+				if (view) view.focus();
+			}, 100);
+		}
+	});
 
 	// Detect language from content
 	function detectLanguage(content: string): string {
@@ -298,13 +312,14 @@
 <div class="code-editor-container">
 	<CodeMirror
 		bind:value
+		on:ready={(e) => (view = e.detail)}
 		lang={langSupport}
 		theme={oneDark}
 		styles={{
 			'&': {
 				maxWidth: '100%',
-				minHeight: '5rem',
-				height: '20rem'
+				minHeight: '20rem',
+				height: 'auto'
 			}
 		}}
 	/>

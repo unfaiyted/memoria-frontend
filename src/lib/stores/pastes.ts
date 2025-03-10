@@ -4,7 +4,7 @@ import { GET, POST, PUT, DELETE } from '$lib/api/client';
 import type { components } from '$lib/api/v1';
 import { type ErrorResponse } from '$lib/api/errors';
 import { ApiError } from '$lib/api/errors';
-
+import { pasteStorage } from '$lib/data/storage';
 // Define types from API schema
 type Paste = components['schemas']['models.Paste'];
 type CreatePasteRequest = components['schemas']['models.CreatePasteRequest'];
@@ -256,6 +256,23 @@ function createPastesStore() {
 			} catch (err) {
 				store.setError(err);
 				throw err;
+			}
+		},
+
+		removePrivatePaste(accessId: string, pasteId?: number) {
+			pasteStorage.removeAccessId(accessId);
+
+			if (pasteId) {
+				// Filter out the paste from the store
+				pastesStore.update((state) => ({
+					...state,
+					pastes: state.pastes.filter((p) => p.id !== pasteId)
+				}));
+			} else {
+				pastesStore.update((state) => ({
+					...state,
+					pastes: state.pastes.filter((p) => p.privateAccessId !== accessId)
+				}));
 			}
 		}
 	};

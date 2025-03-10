@@ -16,7 +16,9 @@
 	const toastStore = getToastStore();
 	// Form state
 	let title = '';
+	let automaticTitle = true;
 	let sendContent = '';
+	let selectedLanguage = '';
 	let defaultContent = '';
 	let syntaxHighlighting = 'text';
 	let expiration = '1d'; // Default: 1 day
@@ -24,8 +26,33 @@
 	let isPrivate = false;
 	let isLoading = false;
 	let isCodeEditor = true;
+	let showPassword = false;
 
 	let osDetected = OperatingSystem.Unknown;
+
+	// All supported languages in CodeEditor
+	const supportedLanguages = [
+		{ value: '', label: 'Auto-detect' },
+		{ value: 'javascript', label: 'JavaScript' },
+		{ value: 'jsx', label: 'JSX' },
+		{ value: 'typescript', label: 'TypeScript' },
+		{ value: 'tsx', label: 'TSX' },
+		{ value: 'html', label: 'HTML' },
+		{ value: 'css', label: 'CSS' },
+		{ value: 'python', label: 'Python' },
+		{ value: 'java', label: 'Java' },
+		{ value: 'php', label: 'PHP' },
+		{ value: 'sql', label: 'SQL' },
+		{ value: 'markdown', label: 'Markdown' },
+		{ value: 'xml', label: 'XML' },
+		{ value: 'json', label: 'JSON' },
+		{ value: 'cpp', label: 'C/C++' },
+		{ value: 'rust', label: 'Rust' },
+		{ value: 'go', label: 'Go' },
+		{ value: 'ruby', label: 'Ruby' },
+		{ value: 'shell', label: 'Shell/Bash' },
+		{ value: 'yaml', label: 'YAML' }
+	];
 
 	onMount(() => {
 		osDetected = detectOS();
@@ -67,10 +94,23 @@
 		}
 	}
 
-	async function handleUpdate(value: string, lang: string = 'text') {
+	function togglePasswordVisibility() {
+		showPassword = !showPassword;
+	}
+
+	async function handleUpdate(value: string, detectedLanguage: string = 'text') {
 		// TODO add code editor logic here for type detection
 		sendContent = value;
-		syntaxHighlighting = lang;
+		syntaxHighlighting = selectedLanguage || detectedLanguage;
+
+		if (automaticTitle) title = `A ${syntaxHighlighting} paste`;
+	}
+
+	function handleTitleFocus() {
+		if (automaticTitle == true) {
+			automaticTitle = false;
+			title = '';
+		}
 	}
 
 	// Handle form submission
@@ -105,10 +145,10 @@
 				if (privacy === 'private' && result.privateAccessId) {
 					pasteStorage.addPasteAccessId(result.privateAccessId);
 				} else {
-					toastStore.trigger({
-						message: 'Paste missing access id ',
-						background: 'variant-filled-error'
-					});
+					// toastStore.trigger({
+					// 	message: 'Paste missing access id ',
+					// 	background: 'variant-filled-error'
+					// });
 				}
 
 				const modal: ModalSettings = {
@@ -145,7 +185,7 @@
 	<title>New Paste</title>
 </svelte:head>
 
-<div class="container mx-auto p-6 max-w-4xl overflow-y">
+<div class="container mx-auto p-1 sm:p-6 max-w-4xl overflow-y">
 	<h2 class="h2 pb-4">Create New Paste</h2>
 
 	<form onsubmit={handleSubmit} class="space-y-6">
@@ -161,7 +201,7 @@
 				<!-- Editor with content binding -->
 				<header class="pt-4 pl-4 mb-4">
 					<div class="flex justify-between">
-						<div>
+						<div class="hidden sm:block">
 							Press <kbd class="kbd">
 								{#if osDetected === OperatingSystem.MacOS}
 									⌘ + V
@@ -170,9 +210,9 @@
 								{/if}</kbd
 							> to paste.
 						</div>
-						<div class="pr-4">
+						<div class="w-full flex flex-row justify-between sm:justify-end pr-4">
 							<button
-								class="chip variant-soft hover:variant-filled"
+								class="chip variant-soft hover:variant-filled mr-2"
 								onclick={(e) => {
 									e.preventDefault();
 									isCodeEditor = !isCodeEditor;
@@ -204,13 +244,29 @@
 				</header>
 				<div class="p-2 bg-surface-200-700-token">
 					{#if isCodeEditor}
-						<CodeEditor value={defaultContent} onUpdate={handleUpdate} />
+						<CodeEditor
+							value={defaultContent}
+							onUpdate={handleUpdate}
+							language={selectedLanguage}
+						/>
 					{:else}
 						<Editor value={defaultContent} onUpdate={handleUpdate} />
 					{/if}
 				</div>
 				<footer class="card-footer border-t-2 pt-3 border-surface-700">
-					<em class="text-xs">Editor can swap between code raw mode and formatted input mode</em>
+					<div class="flex flex-row justify-between">
+						<em class="text-xs my-auto pr-4"
+							>Editor can swap between code raw mode and formatted input mode</em
+						>
+						<label class="label">
+							<span class="text-xs">Language</span>
+							<select class="select" bind:value={selectedLanguage}>
+								{#each supportedLanguages as lang}
+									<option value={lang.value}>{lang.label}</option>
+								{/each}
+							</select>
+						</label>
+					</div>
 				</footer>
 			</div>
 		</div>
@@ -223,6 +279,7 @@
 					id="title"
 					type="text"
 					bind:value={title}
+					onfocusin={handleTitleFocus}
 					placeholder="Enter a title for your paste"
 					class="input"
 					required
@@ -242,15 +299,37 @@
 		<!-- Password Protection and Privacy on same line -->
 		<div class="flex flex-wrap gap-4 items-center">
 			<!-- Password Protection -->
+			<!-- <div class="flex-1 min-w-[250px]"> -->
+			<!-- 	<label for="password" class="label"> Password Protection (Optional) </label> -->
+			<!-- 	<input -->
+			<!-- 		id="password" -->
+			<!-- 		type="password" -->
+			<!-- 		bind:value={password} -->
+			<!-- 		placeholder="Leave empty for no password" -->
+			<!-- 		class="input password" -->
+			<!-- 	/> -->
+			<!-- </div> -->
 			<div class="flex-1 min-w-[250px]">
 				<label for="password" class="label"> Password Protection (Optional) </label>
-				<input
-					id="password"
-					type="password"
-					bind:value={password}
-					placeholder="Leave empty for no password"
-					class="input password"
-				/>
+				<div class="relative">
+					<input
+						id="password"
+						type={showPassword ? 'text' : 'password'}
+						bind:value={password}
+						placeholder="Leave empty for no password"
+						class="input password w-full"
+					/>
+					<button
+						type="button"
+						class="absolute right-2 top-1/2 -translate-y-1/2 pt-1 pr-1"
+						onclick={togglePasswordVisibility}
+						aria-label={showPassword ? 'Hide password' : 'Show password'}
+					>
+						<span class="text-surface-500 hover:text-surface-300">
+							<Icon selected={showPassword ? 'eye-off' : 'eye'} />
+						</span>
+					</button>
+				</div>
 			</div>
 
 			<!-- Privacy Toggle (for logged-in users) -->

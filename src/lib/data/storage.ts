@@ -4,6 +4,7 @@ export interface StorageService {
 	getPasteAccessIds(): string[];
 	clearPasteAccessIds(): void;
 	hasPasteAccessId(id: string): boolean;
+	removeAccessId(id: string): void;
 }
 
 export class LocalStorageService implements StorageService {
@@ -39,6 +40,12 @@ export class LocalStorageService implements StorageService {
 		if (typeof window === 'undefined') return;
 
 		localStorage.removeItem(this.storageKey);
+	}
+
+	removeAccessId(id: string): void {
+		if (typeof window === 'undefined') return;
+		const ids = this.getPasteAccessIds().filter((existingId) => existingId !== id);
+		localStorage.setItem(this.storageKey, JSON.stringify(ids));
 	}
 
 	hasPasteAccessId(id: string): boolean {

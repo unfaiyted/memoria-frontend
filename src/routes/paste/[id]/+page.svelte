@@ -136,15 +136,30 @@
 	let isScrolled = false;
 	let scrollDistance = 0;
 
+	function debounce<T extends (...args: any[]) => any>(
+		func: T,
+		wait: number
+	): (...args: Parameters<T>) => void {
+		let timeout: ReturnType<typeof setTimeout> | null = null;
+
+		return function (...args: Parameters<T>): void {
+			if (timeout) clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				func(...args);
+			}, wait);
+		};
+	}
+
 	onMount(() => {
 		const handleScroll = () => {
 			isScrolled = window.scrollY > 200;
-			scrollDistance = window.scrollY - 150;
-			console.log(isScrolled);
+			scrollDistance = window.scrollY - 125;
 		};
 
-		window.addEventListener('scroll', handleScroll);
-		return () => window.removeEventListener('scroll', handleScroll);
+		const deboucedHandleScroll = debounce(handleScroll, 10);
+
+		window.addEventListener('scroll', deboucedHandleScroll);
+		return () => window.removeEventListener('scroll', deboucedHandleScroll);
 	});
 </script>
 
@@ -181,7 +196,7 @@
 						</div>
 
 						<div
-							class="input-group input-group-divider md:grid-cols-[auto_1fr_auto] w-full mt-2 rounded-xl sm:rounded-3xl"
+							class="input-group input-group-divider md:grid-cols-[auto_1fr_auto] w-full mt-2 rounded-xl :rounded-3xl"
 						>
 							<div
 								class="input-group-shim flex flex-row sm:text-center h-[30px] md:h-[auto] sm:justify-center"
@@ -200,7 +215,16 @@
 									/></svg
 								>
 							</div>
-							<input type="search" placeholder="Enter password..." bind:value={passwordInput} />
+							<input
+								type="password"
+								placeholder="Enter password..."
+								bind:value={passwordInput}
+								onkeypress={(e) => {
+									if (e.key === 'Enter') {
+										handlePasswordSubmit();
+									}
+								}}
+							/>
 							<button
 								class="variant-filled-secondary text-center h-[32px] md:h-[auto]"
 								onclick={handlePasswordSubmit}>Submit</button
@@ -227,7 +251,10 @@
 		<div class="card variant-ghost-surface shadow-xl relative">
 			<!-- Float button -->
 			<button
-				class="btn-icon variant-filled-secondary float-button"
+				class="btn-icon variant-filled-secondary float-button {scrollDistance < 225 &&
+				$currentPaste.editorType == 'code'
+					? 'hidden'
+					: 'f'}"
 				style={isScrolled ? `top: calc(1rem + ${scrollDistance}px);` : ''}
 				title="Copy to clipboard"
 				aria-label="Copy to clipboard"
@@ -254,18 +281,6 @@
 						</div>
 					</div>
 					<div class="flex flex-wrap gap-3 order-1 mx-auto sm:mx-0 sm:max-w-30">
-						<!-- {#if $currentPaste.expiresAt} -->
-						<!-- 	<div class="chip variant-soft-warning cursor-default"> -->
-						<!-- 		<span>Expires: {new Date($currentPaste.expiresAt).toLocaleString()}</span> -->
-						<!-- 	</div> -->
-						<!-- {/if} -->
-						<!---->
-						<!-- {#if $currentPaste.createdAt} -->
-						<!-- 	<div class="chip variant-soft-primary cursor-default"> -->
-						<!-- 		<span>Created: {new Date($currentPaste.createdAt).toLocaleString()}</span> -->
-						<!-- 	</div> -->
-						<!-- {/if} -->
-
 						{#if $currentPaste.createdAt && $currentPaste.expiresAt}
 							<div>
 								<ProgressRadial
@@ -336,5 +351,11 @@
 		right: 1rem;
 		z-index: 10;
 		transition: all 0.3s ease;
+	}
+	@media (min-width: 768px) {
+		.float-button {
+			top: 1rem;
+			right: 2.5rem;
+		}
 	}
 </style>
