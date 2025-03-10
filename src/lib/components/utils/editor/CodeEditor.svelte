@@ -309,7 +309,12 @@
 	});
 </script>
 
-<div class="code-editor-container">
+<div
+	class="code-editor-container"
+	onclick={(e) => {
+		if (view) view.focus();
+	}}
+>
 	<CodeMirror
 		bind:value
 		on:ready={(e) => (view = e.detail)}

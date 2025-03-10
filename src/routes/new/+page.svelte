@@ -271,7 +271,7 @@
 			</div>
 		</div>
 		<!-- Title and Expiration on same line -->
-		<div class="flex flex-wrap gap-4">
+		<div class="flex flex-wrap gap-4 p-2">
 			<!-- Title Input -->
 			<div class="flex-1 min-w-[250px]">
 				<label for="title" class="label mb-1">Title</label>
@@ -297,7 +297,7 @@
 			</div>
 		</div>
 		<!-- Password Protection and Privacy on same line -->
-		<div class="flex flex-wrap gap-4 items-center">
+		<div class="flex flex-wrap gap-4 p-2 items-center">
 			<!-- Password Protection -->
 			<!-- <div class="flex-1 min-w-[250px]"> -->
 			<!-- 	<label for="password" class="label"> Password Protection (Optional) </label> -->
@@ -350,7 +350,7 @@
 		</div>
 
 		<!-- Submit Button -->
-		<div>
+		<div class="p-2">
 			<button
 				type="submit"
 				class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

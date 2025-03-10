@@ -63,7 +63,7 @@
 	</a>
 
 	<!-- Delete button for private pastes -->
-	{#if paste.privacy === 'private' && isHovering}
+	{#if paste.privacy === 'private' && isHovering && isOpen}
 		<button
 			onclick={handleDeletePaste}
 			class="delete-btn absolute top-1 right-1 rounded-full w-5 h-5 mt-1.5 mr-1 flex items-center justify-center bg-error-300 hover:bg-error-400 text-error-50 text-xs"

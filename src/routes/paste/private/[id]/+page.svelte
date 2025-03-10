@@ -237,7 +237,10 @@
 		<div class="card variant-ghost-surface shadow-xl relative">
 			<!-- Float button -->
 			<button
-				class="btn-icon variant-filled-secondary float-button"
+				class="btn-icon variant-filled-secondary float-button {scrollDistance < 225 &&
+				$currentPaste.editorType == 'code'
+					? 'hidden'
+					: ''}"
 				style={isScrolled ? `top: calc(1rem + ${scrollDistance}px);` : ''}
 				title="Copy to clipboard"
 				aria-label="Copy to clipboard"
@@ -346,5 +349,11 @@
 		right: 1rem;
 		z-index: 10;
 		transition: all 0.3s ease;
+	}
+	@media (min-width: 768px) {
+		.float-button {
+			top: 1rem;
+			right: 2.5rem;
+		}
 	}
 </style>

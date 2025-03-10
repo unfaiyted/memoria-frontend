@@ -37,7 +37,7 @@
 			<span class="codeblock-language">JS</span>
 			<!-- <button type="button" class="codeblock-btn btn btn-sm variant-soft !text-white">Copy</button> -->
 		</header>
-		<pre class="!mt-0"><code class="codeblock-code language-html">
+		<pre class="!mt-0"><code class="codeblock-code">
 	<NodeViewContent />
 	</code></pre>
 	</div>
