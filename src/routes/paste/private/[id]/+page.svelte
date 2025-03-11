@@ -20,8 +20,8 @@
 	let pw = $state<string | null>(null);
 
 	// Function to handle password submission
-	function handlePasswordSubmit(): void {
-		if (!passwordInput.trim()) {
+	function handlePasswordSubmit(password: string): void {
+		if (!password.trim()) {
 			toastStore.trigger({
 				message: 'Please enter a password',
 				background: 'variant-filled-warning'
@@ -29,7 +29,7 @@
 			return;
 		}
 
-		if (accessId !== null) loadPrivatePaste(accessId, passwordInput);
+		if (accessId !== null) loadPrivatePaste(accessId, password);
 	}
 
 	// Load the paste data when component mounts or ID changes

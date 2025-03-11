@@ -17,8 +17,8 @@
 	let pw = $state<string | null>(null);
 
 	// Function to handle password submission
-	function handlePasswordSubmit(): void {
-		if (!passwordInput.trim()) {
+	function handlePasswordSubmit(pass: string): void {
+		if (!pass.trim()) {
 			toastStore.trigger({
 				message: 'Please enter a password',
 				background: 'variant-filled-warning'
@@ -26,7 +26,7 @@
 			return;
 		}
 
-		if (id !== null) loadPaste(id, passwordInput);
+		if (id !== null) loadPaste(id, pass);
 	}
 
 	async function loadPaste(pasteId: number, passwordInput: string | null = pw): Promise<void> {

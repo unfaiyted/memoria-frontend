@@ -4,7 +4,7 @@
 	interface PasteErrorProps {
 		error: ErrorResponse;
 		passwordInput: string;
-		handlePasswordSubmit: () => void;
+		handlePasswordSubmit: (password: string) => void;
 		onRetry: (id: string | number) => void;
 		id: string | number;
 	}
@@ -42,13 +42,17 @@
 						bind:value={passwordInput}
 						onkeypress={(e) => {
 							if (e.key === 'Enter') {
-								handlePasswordSubmit();
+								handlePasswordSubmit(passwordInput);
+								passwordInput = '';
 							}
 						}}
 					/>
 					<button
 						class="variant-filled-secondary text-center h-[32px] md:h-[auto]"
-						onclick={handlePasswordSubmit}>Submit</button
+						onclick={() => {
+							handlePasswordSubmit(passwordInput);
+							passwordInput = '';
+						}}>Submit</button
 					>
 				</div>
 			</div>
