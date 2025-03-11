@@ -161,11 +161,13 @@
 					// });
 				}
 
+				const currentUrl = window.location.host;
+				const currProtocol = window.location.href.split(':')[0];
 				const modal: ModalSettings = {
 					type: 'component',
 					component: 'newPasteModel',
 					title: 'Success',
-					value: 'https://prt.ad/a39X2s (fake)',
+					value: `${currProtocol}://${currentUrl}/paste/${result.id}`,
 					body: 'Past created! Here is a short url for easy sharing',
 					response: () => {
 						if (password == '' && privacy == 'public') goto(`/paste/${result.id}`);
