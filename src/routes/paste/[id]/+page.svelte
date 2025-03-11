@@ -6,6 +6,7 @@
 	import PasteMissing from '$lib/components/paste/PasteMissing.svelte';
 	import PasteLoading from '$lib/components/paste/PasteLoading.svelte';
 	import PasteView from '$lib/components/paste/PasteView.svelte';
+	import PasteShareButtonGroup from '$lib/components/paste/PasteShareButtonGroup.svelte';
 
 	// Toast store for notifications
 	const toastStore = getToastStore();
@@ -44,12 +45,13 @@
 
 <div class="container mx-auto p-2 sm:p-6 max-w-5xl">
 	<!-- Breadcrumbs navigation -->
-	<nav class="breadcrumb mb-4">
-		<ol class="flex items-center space-x-2 text-sm">
-			<li><a href="/" class="anchor hover:underline">Home</a></li>
-			<li class="text-surface-500-400-token">•</li>
-			<li>Paste {id}</li>
+	<nav class=" mb-4 flex flex-row justify-between">
+		<ol class="breadcrumb flex items-center space-x-2 text-sm">
+			<li class="crumb"><a href="/" class="anchor hover:underline">Home</a></li>
+			<li class="crumb-separator" aria-hidden="true">&rsaquo;</li>
+			<li class="crumb">Paste {id}</li>
 		</ol>
+		<PasteShareButtonGroup isDropDownEnabled={false} />
 	</nav>
 
 	<header class="text-center mb-8">

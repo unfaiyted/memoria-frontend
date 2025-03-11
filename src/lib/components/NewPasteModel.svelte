@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { SvelteComponent } from 'svelte';
+	import Icon from '$lib/components/utils/Icon.svelte';
 
-	import { ListBox, ListBoxItem, getModalStore, clipboard } from '@skeletonlabs/skeleton';
+	import { getModalStore, clipboard } from '@skeletonlabs/skeleton';
+	import { copyToClipboard } from '$lib/utils/helpers';
 
 	// Props
 	/** Exposes parent props to this component. */
@@ -10,15 +12,58 @@
 	// Local
 	const modalStore = getModalStore();
 
+	// Add state for short URL generation
+	let shortUrlGenerated = false;
+	let shortUrl = '';
+
+	// Function to generate short URL
+	function generateShortUrl() {
+		shortUrlGenerated = true;
+		// This would typically make an API call
+		shortUrl = 'https://short.url/abc123'; // Example value
+		copyToClipboard(shortUrl);
+	}
+
 	// Handle Form Submission
 	function onFormSubmit(): void {
-		if ($modalStore[0].response) $modalStore[0].response();
+		if ($modalStore?.[0]?.response) $modalStore[0]?.response(null);
 		modalStore.close();
 	}
 
-	function onCancel(e) {
-		e.preventDefault();
-		modalStore.close();
+	// function onCancel(e: MouseEvent) {
+	// 	e.preventDefault();
+	// 	modalStore.close();
+	// }
+
+	// Share to Twitter/X
+	function shareToTwitter() {
+		const url = $modalStore[0]?.value || '';
+		const text = 'Check out this paste!';
+		const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+		window.open(shareUrl, '_blank', 'noopener,noreferrer');
+	}
+
+	// Share to Facebook
+	function shareToFacebook() {
+		const url = $modalStore[0]?.value || '';
+		const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+		window.open(shareUrl, '_blank', 'noopener,noreferrer');
+	}
+
+	// Share to LinkedIn
+	function shareToLinkedIn() {
+		const url = $modalStore[0]?.value || '';
+		const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+		window.open(shareUrl, '_blank', 'noopener,noreferrer');
+	}
+
+	// Share via Email
+	function shareViaEmail() {
+		const url = $modalStore[0]?.value || '';
+		const subject = 'Check out this paste';
+		const body = `I wanted to share this paste with you: ${url}`;
+		const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+		window.location.href = mailtoUrl;
 	}
 
 	// Base Classes
@@ -29,37 +74,93 @@
 <!-- @component This example creates a simple form modal. -->
 
 {#if $modalStore[0]}
-	<div class="variant-ghost-success {cBase}">
+	<div class="bg-gradient-to-br variant-gradient-primary-secondary {cBase}">
 		<header class={cHeader}>{$modalStore[0].title ?? '(title missing)'}</header>
 		<article>{$modalStore[0].body ?? '(body missing)'}</article>
 
-		<div class="input-group input-group-divider grid-cols-[1fr_auto]">
-			<input
-				type="text"
-				disabled
-				value={$modalStore[0].value ?? '(missing)'}
-				data-clipboard="pasteLink"
-			/>
-			<button class="border-l-2 border-surface-500" use:clipboard={{ input: 'pasteLink' }}
-				><svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="1em"
-					height="1em"
-					viewBox="0 0 24 24"
-					{...$$props}
-					><!-- Icon from All by undefined - undefined --><path
-						fill="currentColor"
-						d="m18 21l-1.4-1.425L18.175 18H12v-2h6.175L16.6 14.4L18 13l4 4zm3-10h-2V5h-2v3H7V5H5v14h5v2H5q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h4.175q.275-.875 1.075-1.437T12 1q1 0 1.788.563T14.85 3H19q.825 0 1.413.588T21 5zm-9-6q.425 0 .713-.288T13 4t-.288-.712T12 3t-.712.288T11 4t.288.713T12 5"
-					/></svg
-				></button
+		<div class="mb-6">
+			<p class="text-md mb-4 font-bold">Share directly to:</p>
+			<div class="flex gap-4 justify-center">
+				<button
+					class="btn-icon bg-blue-100 rounded-full text-blue-400 transition-colors"
+					onclick={shareToTwitter}
+				>
+					<Icon selected="twitter" />
+				</button>
+				<button
+					class="btn-icon bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full transition-colors"
+					onclick={shareToFacebook}
+				>
+					<Icon selected="facebook" />
+				</button>
+				<button
+					class="btn-icon bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-full transition-colors"
+					onclick={shareToLinkedIn}
+				>
+					<Icon selected="linkedin" />
+				</button>
+				<button
+					class="btn-icon bg-blue-100 hover:bg-blue-200 text-red-400 rounded-full transition-colors"
+					onclick={shareViaEmail}
+				>
+					<Icon selected="email" />
+				</button>
+			</div>
+		</div>
+
+		<div class="flex flex-col mb-4">
+			<label class="label mb-2 text-sm">Copy link:</label>
+			<div
+				class="input-group input-group-divider !bg-white/20 grid-cols-[1fr_auto] !border-white/30 !drop-shadow-md"
 			>
+				<input
+					type="text"
+					disabled
+					class="!bg-white/10"
+					value={$modalStore[0].value ?? '(missing)'}
+					data-clipboard="pasteLink"
+				/>
+				<button
+					class=" border-l-2 !p-0 !border-white/40 bg-secondary-500 text-white"
+					use:clipboard={{ input: 'pasteLink' }}
+				>
+					<Icon selected="copy-out" width="1" />
+				</button>
+			</div>
+		</div>
+
+		<div class="flex flex-col">
+			<label class="label mb-2 text-sm">Generate short URL:</label>
+			{#if !shortUrlGenerated}
+				<button class="btn variant-filled-primary w-full py-2" onclick={generateShortUrl}>
+					Generate Short URL
+				</button>
+			{:else}
+				<div
+					class="input-group input-group-divider !bg-white/20 grid-cols-[1fr_auto] !border-white/40 !drop-shadow-md"
+				>
+					<input
+						type="text"
+						disabled
+						class="!bg-white/10"
+						value={shortUrl}
+						data-clipboard="shortUrl"
+					/>
+					<button
+						class="border-l-2 !p-0 border-surface-400 bg-primary-500 text-surface-700 !text-white"
+						use:clipboard={{ input: 'shortUrl' }}
+					>
+						<Icon selected="confirm-check" width="1" />
+					</button>
+				</div>
+			{/if}
 		</div>
 
 		<!-- prettier-ignore -->
-		<footer class="modal-footer {parent.regionFooter}">
-        <button class="btn {parent.buttonNeutral}" on:click={onCancel}>{parent.buttonTextCancel}</button>
+		<footer class="modal-footer flex flex-row justify-center pt-2 {parent.regionFooter}">
+        <!-- <button class="btn {parent.buttonNeutral}" on:click={onCancel}>{parent.buttonTextCancel}</button> -->
 
-        <button class="btn {parent.buttonPositive}" on:click={onFormSubmit}>View Paste</button>
+        <button class="btn {parent.buttonPositive}" onclick={onFormSubmit}>View Paste</button>
     </footer>
 	</div>
 {/if}

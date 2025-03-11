@@ -5,6 +5,7 @@
 	import { pasteStorage } from '$lib/data/storage';
 	import { goto } from '$app/navigation';
 
+	import PasteShareButtonGroup from '$lib/components/paste/PasteShareButtonGroup.svelte';
 	import PasteMissing from '$lib/components/paste/PasteMissing.svelte';
 	import PasteLoading from '$lib/components/paste/PasteLoading.svelte';
 	import PasteView from '$lib/components/paste/PasteView.svelte';
@@ -47,7 +48,7 @@
 	}
 
 	// Delete the paste using the store
-	async function deletePaste(): Promise<void> {
+	async function deleteLocalPaste(): Promise<void> {
 		if (!$currentPaste) return;
 
 		if (confirm('Are you sure you want to delete this paste? This action cannot be undone.')) {
@@ -74,12 +75,13 @@
 
 <div class="container mx-auto p-2 sm:p-6 max-w-5xl">
 	<!-- Breadcrumbs navigation -->
-	<nav class="breadcrumb mb-4">
-		<ol class="flex items-center space-x-2 text-sm">
-			<li><a href="/" class="anchor hover:underline">Home</a></li>
-			<li class="text-surface-500-400-token">•</li>
-			<li>Private Paste</li>
+	<nav class=" mb-4 flex flex-row justify-between">
+		<ol class="breadcrumb flex items-center space-x-2 text-sm">
+			<li class="crumb"><a href="/" class="anchor hover:underline">Home</a></li>
+			<li class="crumb-separator">&rsaquo;</li>
+			<li class="crumb">Private Paste</li>
 		</ol>
+		<PasteShareButtonGroup handleDelete={deleteLocalPaste} isDropDownEnabled={true} />
 	</nav>
 
 	<header class="text-center mb-8">
