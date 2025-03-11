@@ -418,7 +418,7 @@
 		</div>
 
 		<!-- Create New Button -->
-		<div style="padding: {isOpen ? '0rem 1.5rem' : '0rem 0.5rem'};">
+		<div style="padding: {isOpen ? '1rem 1.5rem' : '0.5rem 0.5rem'};">
 			<div class="mt-6 pt-4 border-t-2 border-surface-500 flex-shrink-0">
 				<a
 					href="/new"
