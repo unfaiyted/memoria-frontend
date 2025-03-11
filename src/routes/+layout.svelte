@@ -28,6 +28,10 @@
 	import jsx from 'highlight.js/lib/languages/javascript'; // JSX is handled by javascript with options
 	import lua from 'highlight.js/lib/languages/lua';
 	import powershell from 'highlight.js/lib/languages/powershell';
+	import swift from 'highlight.js/lib/languages/swift';
+	import dockerfile from 'highlight.js/lib/languages/dockerfile';
+	import nginx from 'highlight.js/lib/languages/nginx';
+	import cmake from 'highlight.js/lib/languages/cmake';
 	import svelte from '$lib/types/lang-svelte';
 
 	// Register highlight.js languages
@@ -54,7 +58,11 @@
 	hljs.registerLanguage('jsx', jsx); // JSX uses javascript highlighter
 	hljs.registerLanguage('tsx', typescript); // TSX uses typescript highlighter
 	hljs.registerLanguage('svelte', svelte); // TSX uses typescript highlighter
+	hljs.registerLanguage('swift', swift); // TSX uses typescript highlighter
 	hljs.registerLanguage('lua', lua);
+	hljs.registerLanguage('nginx', nginx);
+	hljs.registerLanguage('cmake', cmake);
+	hljs.registerLanguage('dockerfile', dockerfile);
 	hljs.registerLanguage('powershell', powershell);
 
 	storeHighlightJs.set(hljs);

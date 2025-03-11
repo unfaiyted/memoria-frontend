@@ -51,11 +51,17 @@
 		{ value: 'cpp', label: 'C/C++' },
 		{ value: 'rust', label: 'Rust' },
 		{ value: 'go', label: 'Go' },
+		//  Added support for Svelte, Ruby, CMake, Nginx, Dockerfile, Swift, R, PowerShell, Shell, and Lua
 		{ value: 'ruby', label: 'Ruby' },
 		{ value: 'shell', label: 'Shell/Bash' },
 		{ value: 'yaml', label: 'YAML' },
 		{ value: 'lua', label: 'Lua' },
-		{ value: 'svelte', label: 'Svelte' }
+		{ value: 'svelte', label: 'Svelte' },
+		{ value: 'cmake', label: 'CMake' },
+		{ value: 'nginx', label: 'Nginx' },
+		{ value: 'dockerfile', label: 'Dockerfile' },
+		{ value: 'swift', label: 'Swift' },
+		{ value: 'r', label: 'R' }
 	];
 
 	onMount(() => {

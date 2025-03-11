@@ -53,7 +53,7 @@
 		use:popup={getPastePopupSettings(paste.id)}
 		onclick={(e) => handlePasteClick(e, paste.id)}
 	>
-		<Icon selected="note" />
+		<Icon selected={`lang-${paste.syntaxHighlight}`} />
 		{#if isOpen}
 			<span
 				transition:fade={{ duration: 200 }}
