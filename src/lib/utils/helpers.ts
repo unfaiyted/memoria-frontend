@@ -1,3 +1,4 @@
+import { getToastStore } from '@skeletonlabs/skeleton';
 /**
  * OS detection utility functions
  */
@@ -70,3 +71,37 @@ export const getBrowserInfo = () => {
 		screenHeight: window.innerHeight
 	};
 };
+
+// Copy paste content to clipboard
+export async function copyToClipboard(content: string): Promise<void> {
+	const toastStore = getToastStore();
+	if (!content || content === '') return;
+
+	try {
+		await navigator.clipboard.writeText(content);
+		toastStore.trigger({
+			message: 'Copied to clipboard!',
+			background: 'variant-filled-success'
+		});
+	} catch (err: unknown) {
+		console.error('Failed to copy: ', err);
+		toastStore.trigger({
+			message: 'Failed to copy to clipboard',
+			background: 'variant-filled-error'
+		});
+	}
+}
+
+export function debounce<T extends (...args: any[]) => any>(
+	func: T,
+	wait: number
+): (...args: Parameters<T>) => void {
+	let timeout: ReturnType<typeof setTimeout> | null = null;
+
+	return function (...args: Parameters<T>): void {
+		if (timeout) clearTimeout(timeout);
+		timeout = setTimeout(() => {
+			func(...args);
+		}, wait);
+	};
+}
