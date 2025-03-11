@@ -18,6 +18,18 @@
 	let scrollDistance = $state(0);
 	let isScrolled = $state(false);
 
+	function getProgressColor(percentage: number): string {
+		if (percentage >= 60) return 'stroke-success-500'; // Green
+		if (percentage >= 30) return 'stroke-warning-500'; // Yellow
+		return 'stroke-error-500'; // Red
+	}
+
+	function getProgressTrackColor(percentage: number): string {
+		if (percentage >= 60) return 'stroke-success-500/30'; // Green track
+		if (percentage >= 30) return 'stroke-warning-500/30'; // Yellow track
+		return 'stroke-error-500/30'; // Red track
+	}
+
 	onMount(() => {
 		const handleScroll = () => {
 			isScrolled = window.scrollY > 200;
@@ -70,8 +82,12 @@
 							value={calculateTimeLeftPercentage(paste.createdAt, paste.expiresAt)}
 							width="w-24"
 							stroke={50}
-							meter="stroke-primary-500"
-							track="stroke-primary-500/30"
+							meter={getProgressColor(
+								calculateTimeLeftPercentage(paste.createdAt, paste.expiresAt)
+							)}
+							track={getProgressTrackColor(
+								calculateTimeLeftPercentage(paste.createdAt, paste.expiresAt)
+							)}
 						>
 							{formatTimeLeft(paste.expiresAt)}
 						</ProgressRadial>

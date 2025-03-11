@@ -11,12 +11,10 @@
 	// Toast store for notifications
 	const toastStore = getToastStore();
 
-	// Access the ID from the URL parameter with proper type checking
-	const id = page.params.id ? parseInt(page.params.id, 10) : null;
-	const pw = page.url.searchParams.get('pw');
-
 	// State for password input
 	let passwordInput = $state('');
+	let id = $state<number | null>(null);
+	let pw = $state<string | null>(null);
 
 	// Function to handle password submission
 	function handlePasswordSubmit(): void {
@@ -31,16 +29,20 @@
 		if (id !== null) loadPaste(id, passwordInput);
 	}
 
-	// Load the paste data when component mounts or ID changes
-	if (id !== null) {
-		loadPaste(id);
-	}
-
 	async function loadPaste(pasteId: number, passwordInput: string | null = pw): Promise<void> {
 		try {
 			await pastesStore.fetchPaste(pasteId, passwordInput);
 		} catch (err: unknown) {}
 	}
+
+	$effect(() => {
+		id = page.params.id ? parseInt(page.params.id, 10) : null;
+		pw = page.url.searchParams.get('pw');
+
+		if (id !== null) {
+			loadPaste(id, pw);
+		}
+	});
 </script>
 
 <div class="container mx-auto p-2 sm:p-6 max-w-5xl">

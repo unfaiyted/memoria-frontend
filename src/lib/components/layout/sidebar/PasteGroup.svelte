@@ -16,7 +16,7 @@
 </script>
 
 {#if pastes.length > 0}
-	<div class="mb-4">
+	<div class="">
 		{#if isOpen}
 			<h2
 				class="text-xs font-semibold uppercase tracking-wider mb-2"
@@ -24,8 +24,15 @@
 			>
 				{groupTitle}
 			</h2>
+		{:else}
+			<div
+				class="text-xs mx-auto text-center font-semibold mb-2 p-0 mt-0 w-full text-slate-500 max-h-[10px]"
+				aria-label={groupTitle}
+			>
+				.
+			</div>
 		{/if}
-		<ul class="space-y-1">
+		<ul class="space-y-1 first-of-type:pt-2">
 			{#each pastes as paste (paste.id)}
 				<PasteItem {paste} {isOpen} {onPasteClick} {variant} />
 			{/each}

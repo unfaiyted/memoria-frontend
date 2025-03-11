@@ -14,10 +14,10 @@
 	const toastStore = getToastStore();
 
 	// Access the ID from the URL parameter with proper type checking
-	const accessId = page.params.id ? page.params.id : null;
-	const pw = page.url.searchParams.get('pw');
 
 	let passwordInput = $state('');
+	let accessId = $state<string | null>(null);
+	let pw = $state<string | null>(null);
 
 	// Function to handle password submission
 	function handlePasswordSubmit(): void {
@@ -33,9 +33,14 @@
 	}
 
 	// Load the paste data when component mounts or ID changes
-	if (accessId !== null) {
-		loadPrivatePaste(accessId);
-	}
+	$effect(() => {
+		accessId = page.params.id ? page.params.id : null;
+		pw = page.url.searchParams.get('pw');
+
+		if (accessId !== null) {
+			loadPrivatePaste(accessId, pw);
+		}
+	});
 
 	async function loadPrivatePaste(
 		pasteId: string,

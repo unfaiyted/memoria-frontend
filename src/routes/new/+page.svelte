@@ -12,6 +12,7 @@
 	import { detectOS } from '$lib/utils/helpers';
 	import { OperatingSystem } from '$lib/utils/helpers';
 	import Layout from '../+layout.svelte';
+	import PasteLoading from '$lib/components/paste/PasteLoading.svelte';
 
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
@@ -163,11 +164,16 @@
 
 				const currentUrl = window.location.host;
 				const currProtocol = window.location.href.split(':')[0];
+
+				const pasteLocation =
+					privacy === 'public'
+						? `${currProtocol}://${currentUrl}/paste/${result.id}`
+						: `${currProtocol}://${currentUrl}/paste/private/${result.privateAccessId}`;
 				const modal: ModalSettings = {
 					type: 'component',
 					component: 'newPasteModel',
 					title: 'Success',
-					value: `${currProtocol}://${currentUrl}/paste/${result.id}`,
+					value: pasteLocation,
 					body: 'Past created! Here is a short url for easy sharing',
 					response: () => {
 						if (password == '' && privacy == 'public') goto(`/paste/${result.id}`);

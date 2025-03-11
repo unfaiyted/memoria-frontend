@@ -1,12 +1,18 @@
 <script lang="ts">
 	import Icon from '$lib/components/utils/Icon.svelte';
 	import { fade } from 'svelte/transition';
+	import { page } from '$app/state';
 	import { popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { pasteStorage } from '$lib/data/storage';
 	import { pastesStore } from '$lib/stores/pastes';
 
 	let { paste, isOpen, onPasteClick, variant } = $props();
 	let isHovering = $state(false);
+	let isActive = $derived(
+		page.url.pathname === `/paste/${paste.id}` ||
+			(paste.privateAccessId && page.url.pathname === `/paste/private/${paste.privateAccessId}`)
+	);
+
 	function getPastePopupSettings(pasteId: string | number): PopupSettings {
 		return {
 			event: 'hover',
@@ -41,15 +47,18 @@
 	onmouseleave={() => {
 		isHovering = false;
 	}}
-	class="relative"
+	class="relative ml-0 !pl-0"
 >
 	<a
 		href={paste.privacy == 'public'
 			? `/paste/${paste.id}`
 			: `/paste/private/${paste.privateAccessId}`}
-		class="flex button items-center rounded-md px-3 py-2 [&>*]:pointer-events-none hover:bg-indigo-50 {isHovering
+		class="flex button items-center rounded-md px-3 py-2 [&>*]:pointer-events-none hover:bg-indigo-50 {isHovering &&
+		!isActive
 			? 'bg-indigo-50 text-indigo-600'
-			: ''} hover:text-indigo-600 {isOpen ? 'space-x-3' : 'justify-center'}"
+			: ''} {isActive
+			? `bg-indgo-100 text-indigo-500 font-medium bg-indigo-200/5`
+			: ``} hover:text-indigo-600 {isOpen ? 'space-x-3' : 'justify-center'}"
 		use:popup={getPastePopupSettings(paste.id)}
 		onclick={(e) => handlePasteClick(e, paste.id)}
 	>

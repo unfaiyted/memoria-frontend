@@ -236,7 +236,7 @@
     border-r-2 border-surface-600 bg-surface-900 shadow-sm z-50"
 	style="width: {width}rem"
 >
-	<div class="flex h-dvh flex-col overflow-hidden" style="padding: {isOpen ? '1.5rem' : '0.5rem'};">
+	<div class="flex h-dvh flex-col overflow-hidden">
 		<!-- Toggle Button -->
 		<button
 			class="absolute top-4 {isOpen
@@ -256,7 +256,10 @@
 		</button>
 
 		<!-- Logo/Brand -->
-		<div class="flex items-center {isOpen ? 'space-x-2' : 'justify-center'} mb-6">
+		<div
+			class="flex items-center {isOpen ? 'space-x-2' : 'justify-center'} mb-6"
+			style="padding: {isOpen ? '0rem 1.5rem' : '0rem 0.5rem'};"
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				width="24"
@@ -267,14 +270,14 @@
 				stroke-width="2"
 				stroke-linecap="round"
 				stroke-linejoin="round"
-				class={`${isOpen ? '' : 'opacity-0'} lucide w-8 h-8 text-indigo-600`}
+				class={`${isOpen ? '' : 'opacity-0'} mt-4 lucide w-8 h-8 text-indigo-600`}
 				><path d="m18 16 4-4-4-4"></path><path d="m6 8-4 4 4 4"></path><path d="m14.5 4-5 16"
 				></path></svg
 			>
 			{#if isOpen}
 				<h1
 					transition:fade={{ duration: 200 }}
-					class="text-xl font-semibold whitespace-nowrap overflow-hidden"
+					class="text-xl font-semibold whitespace-nowrap overflow-hidden pt-4"
 				>
 					<a
 						href="/"
@@ -287,7 +290,10 @@
 		</div>
 
 		<!-- Search Bar -->
-		<div class="mb-4 flex-shrink-0">
+		<div
+			class="{isOpen ? 'mb-4' : 'mb-0'} flex-shrink-0"
+			style="padding: {isOpen ? '0rem 1.5rem' : '0rem 0.5rem'};"
+		>
 			{#if isOpen}
 				<div transition:fade={{ duration: 200 }}>
 					<div class="relative">
@@ -334,7 +340,10 @@
 		</div>
 
 		<!-- Paste History -->
-		<div class="flex-1 overflow-y-auto min-h-0 w-[112%]">
+		<div
+			class="flex-1 overflow-y-auto min-h-0 w-[100%]"
+			style="padding: {isOpen ? '0rem 1.5rem' : '0rem 0.5rem'};"
+		>
 			{#if $pastesLoading}
 				<div class="text-center py-4">
 					{#if isOpen}
@@ -409,26 +418,28 @@
 		</div>
 
 		<!-- Create New Button -->
-		<div class="mt-6 pt-4 border-t border-surface-200 flex-shrink-0">
-			<a
-				href="/new"
-				onclick={handleNewPasteClick}
-				class="flex items-center justify-center py-2 px-4 bg-indigo-600
+		<div style="padding: {isOpen ? '0rem 1.5rem' : '0rem 0.5rem'};">
+			<div class="mt-6 pt-4 border-t-2 border-surface-500 flex-shrink-0">
+				<a
+					href="/new"
+					onclick={handleNewPasteClick}
+					class="flex items-center justify-center py-2 px-4 bg-indigo-600
           hover:bg-indigo-700 rounded-md text-white {isOpen ? '' : 'w-full'}"
-			>
-				<svg
-					class="h-5 w-5 {isOpen ? 'mr-2' : ''}"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
 				>
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"
-					></path>
-				</svg>
-				{#if isOpen}
-					<span transition:fade={{ duration: 200 }}>New Paste</span>
-				{/if}
-			</a>
+					<svg
+						class="h-5 w-5 {isOpen ? 'mr-2' : ''}"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"
+						></path>
+					</svg>
+					{#if isOpen}
+						<span transition:fade={{ duration: 200 }}>New Paste</span>
+					{/if}
+				</a>
+			</div>
 		</div>
 	</div>
 </aside>
