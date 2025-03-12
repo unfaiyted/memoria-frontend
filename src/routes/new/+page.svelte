@@ -147,8 +147,6 @@
 				pasteData.password = password;
 			}
 
-			console.log('pasteData', pasteData);
-
 			// Create paste using the store
 			const result: Paste | null = await pastesStore.createPaste(pasteData);
 

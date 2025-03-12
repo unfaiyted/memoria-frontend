@@ -340,7 +340,6 @@
 				});
 		}
 
-		console.log(value);
 		onUpdate(value, newLang);
 	});
 </script>

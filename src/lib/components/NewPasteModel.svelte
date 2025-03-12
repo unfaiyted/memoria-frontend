@@ -30,11 +30,6 @@
 		modalStore.close();
 	}
 
-	// function onCancel(e: MouseEvent) {
-	// 	e.preventDefault();
-	// 	modalStore.close();
-	// }
-
 	// Share to Twitter/X
 	function shareToTwitter() {
 		const url = $modalStore[0]?.value || '';
@@ -109,12 +104,13 @@
 		</div>
 
 		<div class="flex flex-col mb-4">
-			<label class="label mb-2 text-sm">Copy link:</label>
+			<label class="label mb-2 text-sm" for="pasteLink">Copy link:</label>
 			<div
 				class="input-group input-group-divider !bg-white/20 grid-cols-[1fr_auto] !border-white/30 !drop-shadow-md"
 			>
 				<input
 					type="text"
+					name="pasteLink"
 					disabled
 					class="!bg-white/10"
 					value={$modalStore[0].value ?? '(missing)'}
@@ -130,7 +126,7 @@
 		</div>
 
 		<div class="flex flex-col">
-			<label class="label mb-2 text-sm">Generate short URL:</label>
+			<label class="label mb-2 text-sm" for="shortUrl">Generate short URL:</label>
 			{#if !shortUrlGenerated}
 				<button class="btn variant-filled-primary w-full py-2" onclick={generateShortUrl}>
 					Generate Short URL
@@ -142,12 +138,13 @@
 					<input
 						type="text"
 						disabled
+						name="shortUrl"
 						class="!bg-white/10"
 						value={shortUrl}
 						data-clipboard="shortUrl"
 					/>
 					<button
-						class="border-l-2 !p-0 border-surface-400 bg-primary-500 text-surface-700 !text-white"
+						class="border-l-2 !p-0 border-surface-400 bg-primary-500 !text-white"
 						use:clipboard={{ input: 'shortUrl' }}
 					>
 						<Icon selected="confirm-check" width="1" />
@@ -158,7 +155,6 @@
 
 		<!-- prettier-ignore -->
 		<footer class="modal-footer flex flex-row justify-center pt-2 {parent.regionFooter}">
-        <!-- <button class="btn {parent.buttonNeutral}" on:click={onCancel}>{parent.buttonTextCancel}</button> -->
 
         <button class="btn {parent.buttonPositive}" onclick={onFormSubmit}>View Paste</button>
     </footer>

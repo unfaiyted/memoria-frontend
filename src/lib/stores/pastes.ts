@@ -129,7 +129,6 @@ function createPastesStore() {
 				}
 				return null;
 			} catch (err) {
-				console.log('err-catch', err);
 				store.setError(err);
 				throw err;
 			}
@@ -162,7 +161,6 @@ function createPastesStore() {
 				}
 				return null;
 			} catch (err) {
-				console.log('err-catch', err);
 				store.setError(err);
 				throw err;
 			}
@@ -180,8 +178,6 @@ function createPastesStore() {
 					const status = response.error?.status || 500;
 					throw new ApiError(errorData, status);
 				}
-
-				console.log('create', response);
 
 				const data = response.data as PasteResponse;
 				if (data && data.data && data.data.paste) {

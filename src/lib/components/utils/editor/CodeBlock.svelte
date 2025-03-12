@@ -1,20 +1,9 @@
 <script lang="ts">
 	import type { NodeViewProps } from '@tiptap/core';
 	import { NodeViewContent, NodeViewWrapper } from 'svelte-tiptap';
-	import { CodeBlock } from '@skeletonlabs/skeleton';
 
 	// Props
 	let { node, updateAttributes, extension }: NodeViewProps = $props();
-
-	// Reactive state using Svelte 5 runes
-	const languages = $state(extension.options.lowlight.listLanguages());
-	console.log('lang', languages);
-	const selectedLanguage = $state(node.attrs.language);
-
-	// Effect to update attributes when selectedLanguage changes
-	$effect(() => {
-		// updateAttributes({ language: selectedLanguage });
-	});
 </script>
 
 <NodeViewWrapper class="code-block">

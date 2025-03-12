@@ -84,7 +84,6 @@ export async function copyToClipboard(content: string): Promise<void> {
 			background: 'variant-filled-success'
 		});
 	} catch (err: unknown) {
-		console.error('Failed to copy: ', err);
 		toastStore.trigger({
 			message: 'Failed to copy to clipboard',
 			background: 'variant-filled-error'

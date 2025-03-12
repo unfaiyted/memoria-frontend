@@ -82,7 +82,7 @@
 	let pageContainer: HTMLElement;
 
 	function handleToggle(e: CustomEvent<{ isOpen: boolean }>) {
-		sidebarOpen = e.detail.isOpen;
+		if (e.detail) sidebarOpen = e.detail.isOpen;
 	}
 
 	const modalRegistry: Record<string, ModalComponent> = {

@@ -20,7 +20,7 @@
 				background: 'variant-filled-success'
 			});
 		} catch (err) {
-			console.error('Failed to copy: ', err);
+			// console.error('Failed to copy: ', err);
 			toastStore.trigger({
 				message: 'Failed to copy to clipboard',
 				background: 'variant-filled-error'

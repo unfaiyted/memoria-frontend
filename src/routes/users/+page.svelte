@@ -16,18 +16,14 @@
 	// 	value: string | number | boolean | null; // Value for the table cell
 	// }
 
-	console.log('baseUrl', baseUrl);
 	// type TableRow = UserResponse; // Each row matches the user object structure
 
 	// Load users on mount
 	onMount(async () => {
 		try {
-			console.log('Running mount');
 			const { data, error: apiError } = await GET('/users');
 			if (apiError) throw apiError;
 			users = data || [];
-			console.log('Users assigned.');
-			console.log(users);
 		} catch (e) {
 			error = e instanceof Error ? e : new Error('Unknown error occurred');
 		} finally {

@@ -17,6 +17,7 @@
 
 	let passwordInput = $state('');
 	let accessId = $state<string | null>(null);
+	let lastAccessId = $state<string | null>(null);
 	let pw = $state<string | null>(null);
 
 	// Function to handle password submission
@@ -37,8 +38,9 @@
 		accessId = page.params.id ? page.params.id : null;
 		pw = page.url.searchParams.get('pw');
 
-		if (accessId !== null) {
+		if (accessId !== null && lastAccessId !== accessId) {
 			loadPrivatePaste(accessId, pw);
+			lastAccessId = accessId.valueOf();
 		}
 	});
 

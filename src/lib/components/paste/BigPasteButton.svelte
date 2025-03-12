@@ -38,8 +38,8 @@
 	<button
 		class="paste-button"
 		class:hovered={isHovered}
-		on:mouseenter={onMouseEnter}
-		on:mouseleave={onMouseLeave}
+		onmouseenter={onMouseEnter}
+		onmouseleave={onMouseLeave}
 	>
 		<span class="button-text">Paste</span>
 

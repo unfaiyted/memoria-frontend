@@ -14,6 +14,7 @@
 	// State for password input
 	let passwordInput = $state('');
 	let id = $state<number | null>(null);
+	let lastId = $state<number>(0);
 	let pw = $state<string | null>(null);
 
 	// Function to handle password submission
@@ -39,8 +40,9 @@
 		id = page.params.id ? parseInt(page.params.id, 10) : null;
 		pw = page.url.searchParams.get('pw');
 
-		if (id !== null) {
+		if (id !== null && lastId !== id) {
 			loadPaste(id, pw);
+			lastId = id.valueOf();
 		}
 	});
 </script>

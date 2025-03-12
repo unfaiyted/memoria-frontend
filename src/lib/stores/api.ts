@@ -22,4 +22,3 @@ export const apiStore = {
 };
 
 // Remove console.log after testing
-// console.log('baseUrl', baseUrl);=> $store.error);
