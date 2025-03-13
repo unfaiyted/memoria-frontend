@@ -1,0 +1,1094 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "API Server for Memoria application",
+    "title": "Memoria API",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "name": "API Support",
+      "url": "http://www.swagger.io/support",
+      "email": "support@swagger.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "description": "returns JSON object with health statuses.",
+        "tags": [
+          "health"
+        ],
+        "summary": "checks app and database health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.HealthResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paste": {
+      "put": {
+        "description": "Update a pastes value",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Update paste",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/models.UpdatePasteRequest"
+              }
+            }
+          },
+          "description": "Updated paste data",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success response with paste data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paste not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Creates a new paste",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Create paste",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/models.CreatePasteRequest"
+              }
+            }
+          },
+          "description": "Paste data",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success response with paste data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "delete a paste by ID",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Deletes paste by ID",
+        "parameters": [
+          {
+            "description": "Paste ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-uint64"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paste/all": {
+      "get": {
+        "description": "Returns a list of all the pastes. # TODO: pagination",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Lists out all the pastes",
+        "parameters": [
+          {
+            "description": "Page number",
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "description": "Items per page",
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response with paste list data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteListData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paste/private/batch": {
+      "post": {
+        "description": "Retrieve multiple pastes by providing a comma-separated list of private access IDs",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Gets multiple pastes using their private access IDs",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/models.PrivateAccessIDsRequest"
+              }
+            }
+          },
+          "description": "List of private access IDs",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success response with list of pastes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteListData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paste/private/{accessId}": {
+      "get": {
+        "description": "Retrieve a private paste by its private access ID",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Gets a specific private paste using its private access ID",
+        "parameters": [
+          {
+            "description": "Private Access ID",
+            "name": "accessId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Password for protected pastes",
+            "name": "pw",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response with paste data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paste not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paste/{id}": {
+      "get": {
+        "description": "Retrieve a paste by ID",
+        "tags": [
+          "pastes"
+        ],
+        "summary": "Gets a specific paste",
+        "parameters": [
+          {
+            "description": "Paste ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Password for protected pastes",
+            "name": "pw",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success response with paste data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_PasteData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Pssword required or invalid password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paste not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Get all users in the system",
+        "tags": [
+          "users"
+        ],
+        "summary": "List users",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/models.UserResponse"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new user in the system",
+        "tags": [
+          "users"
+        ],
+        "summary": "Create a new user",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/models.User"
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "description": "Get a user by ID",
+        "tags": [
+          "users"
+        ],
+        "summary": "Get a user",
+        "parameters": [
+          {
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.UserResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Update a user's information",
+        "tags": [
+          "users"
+        ],
+        "summary": "Update a user",
+        "parameters": [
+          {
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/models.User"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a user by ID",
+        "tags": [
+          "users"
+        ],
+        "summary": "Delete a user",
+        "parameters": [
+          {
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api/v1"
+    }
+  ],
+  "components": {
+    "requestBodies": {
+      "models.User": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/models.User"
+            }
+          }
+        },
+        "description": "User data",
+        "required": true
+      }
+    },
+    "schemas": {
+      "models.APIResponse-models_PasteData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/models.PasteData"
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation successful"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "models.APIResponse-models_PasteListData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/models.PasteListData"
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation successful"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "models.APIResponse-uint64": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation successful"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "models.CreatePasteRequest": {
+        "type": "object",
+        "required": [
+          "content",
+          "privacy",
+          "title"
+        ],
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "editorType": {
+            "type": "string",
+            "enum": [
+              "code",
+              "text"
+            ],
+            "example": "code"
+          },
+          "expiresAt": {
+            "type": "string",
+            "example": "2023-01-08T00:00:00Z"
+          },
+          "password": {
+            "type": "string",
+            "example": "mySecurePassword123"
+          },
+          "privacy": {
+            "type": "string",
+            "enum": [
+              "public",
+              "private",
+              "password"
+            ]
+          },
+          "syntaxHighlight": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "models.ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/models.ErrorType"
+              }
+            ],
+            "example": "FAILED_CHECK"
+          },
+          "message": {
+            "type": "string",
+            "example": "This is a pretty message"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      },
+      "models.ErrorType": {
+        "type": "string",
+        "enum": [
+          "FAILED_CHECK",
+          "UNAUTHORIZED",
+          "NOT_FOUND",
+          "BAD_REQUEST",
+          "INTERNAL_ERROR",
+          "FORBIDDEN",
+          "CONFLICT",
+          "VALIDATION_ERROR",
+          "RATE_LIMITED",
+          "TIMEOUT",
+          "SERVICE_UNAVAILABLE",
+          "UNPROCESSABLE_ENTITY"
+        ],
+        "x-enum-varnames": [
+          "ErrorTypeFailedCheck",
+          "ErrorTypeUnauthorized",
+          "ErrorTypeNotFound",
+          "ErrorTypeBadRequest",
+          "ErrorTypeInternalError",
+          "ErrorTypeForbidden",
+          "ErrorTypeConflict",
+          "ErrorTypeValidation",
+          "ErrorTypeRateLimited",
+          "ErrorTypeTimeout",
+          "ErrorTypeServiceUnavailable",
+          "ErrorTypeUnprocessableEntity"
+        ]
+      },
+      "models.HealthResponse": {
+        "type": "object",
+        "required": [
+          "application",
+          "database",
+          "status"
+        ],
+        "properties": {
+          "application": {
+            "type": "boolean",
+            "example": true
+          },
+          "database": {
+            "type": "boolean",
+            "example": true
+          },
+          "status": {
+            "description": "Overall status of the system",
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "degraded"
+            ],
+            "example": "up"
+          }
+        }
+      },
+      "models.Paste": {
+        "description": "A text snippet with formatting, expiration, and privacy settings",
+        "type": "object",
+        "required": [
+          "content",
+          "editorType",
+          "id",
+          "privacy",
+          "syntaxHighlight",
+          "title"
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "console.log('Hello world');"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2023-01-01T00:00:00Z"
+          },
+          "editorType": {
+            "type": "string",
+            "enum": [
+              "code",
+              "text"
+            ],
+            "example": "code"
+          },
+          "expiresAt": {
+            "type": "string",
+            "example": "2023-01-08T00:00:00Z"
+          },
+          "id": {
+            "type": "integer",
+            "example": 123111
+          },
+          "privacy": {
+            "description": "\"public\", \"private\"",
+            "type": "string",
+            "enum": [
+              "public",
+              "private"
+            ],
+            "example": "public"
+          },
+          "privateAccessId": {
+            "type": "string",
+            "example": "abc123xyz456"
+          },
+          "syntaxHighlight": {
+            "type": "string",
+            "example": "javascript"
+          },
+          "title": {
+            "type": "string",
+            "example": "My Code Snippet"
+          },
+          "user_id": {
+            "type": "string",
+            "example": "u98765zyxwv"
+          }
+        }
+      },
+      "models.PasteData": {
+        "type": "object",
+        "properties": {
+          "paste": {
+            "$ref": "#/components/schemas/models.Paste"
+          }
+        }
+      },
+      "models.PasteListData": {
+        "description": "List of pastes response wrapper",
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "pastes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/models.Paste"
+            }
+          }
+        }
+      },
+      "models.PrivateAccessIDsRequest": {
+        "type": "object",
+        "required": [
+          "accessIds"
+        ],
+        "properties": {
+          "accessIds": {
+            "type": "string",
+            "example": "abc123,def456,ghi789"
+          }
+        }
+      },
+      "models.UpdatePasteRequest": {
+        "type": "object",
+        "required": [
+          "content",
+          "id",
+          "privacy",
+          "title"
+        ],
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "editorType": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "example": "2023-01-08T00:00:00Z"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "password": {
+            "type": "string",
+            "example": "mySecurePassword123"
+          },
+          "privacy": {
+            "type": "string",
+            "enum": [
+              "public",
+              "private",
+              "password"
+            ]
+          },
+          "syntaxHighlight": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "models.User": {
+        "type": "object",
+        "required": [
+          "email",
+          "name",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 2,
+            "example": "John Doe"
+          },
+          "password": {
+            "description": "omitempty will exclude it from JSON responses",
+            "type": "string",
+            "format": "password",
+            "minLength": 8,
+            "example": "strongpassword123"
+          }
+        }
+      },
+      "models.UserResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

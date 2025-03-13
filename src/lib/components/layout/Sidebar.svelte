@@ -6,11 +6,7 @@
 	import PasteGroup from '$lib/components/layout/sidebar/PasteGroup.svelte';
 	import { browser } from '$app/environment';
 	import { afterNavigate, onNavigate } from '$app/navigation';
-	import type { components } from '$lib/api/v1';
-
-	type Paste = components['schemas']['models.Paste'];
-
-	// Props with defaults
+	import type { Paste } from '$lib/api/types';
 
 	let { isOpen = $bindable(false), title = 'Memoria', onToggle } = $props();
 
@@ -49,12 +45,6 @@
 			lastFetchTime = Date.now();
 		}
 	}
-
-	// Force refresh function for manual updates
-	// function forceRefresh() {
-	// 	pastesStore.fetchAllPastes();
-	// 	lastFetchTime = Date.now();
-	// }
 
 	$effect(() => {
 		// Update target width when isOpen changes
@@ -233,7 +223,7 @@
 
 <aside
 	class="sidebar fixed top-0 left-0 h-dvh flex flex-col
-    border-r-2 border-surface-600 bg-surface-900 shadow-sm z-50"
+    border-r-2 border-surface-300-600-token bg-surface-50-900-token shadow-sm z-50"
 	style="width: {width}rem"
 >
 	<div class="flex h-dvh flex-col overflow-hidden">

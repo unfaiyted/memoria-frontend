@@ -1,8 +1,5 @@
 // src/lib/api/errors.ts
-import type { components } from '$lib/api/v1';
-
-export type ErrorResponse = components['schemas']['models.ErrorResponse'];
-export type ErrorType = components['schemas']['models.ErrorType'];
+import type { ErrorResponse, ErrorType } from './types';
 
 export class ApiError extends Error {
 	error: ErrorType;

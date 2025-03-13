@@ -1,20 +1,19 @@
 import { derived } from 'svelte/store';
 import { createBaseStore, type BaseApiState } from './base';
-import { GET, POST, PUT, DELETE } from '$lib/api/client';
-import type { components } from '$lib/api/v1';
-import { type ErrorResponse } from '$lib/api/errors';
+import { GET, POST, PUT, DELETE } from '$lib/api/clients';
 import { ApiError } from '$lib/api/errors';
 import { pasteStorage } from '$lib/data/storage';
+
+import type {
+	Paste,
+	UpdatePasteRequest,
+	PasteResponse,
+	PasteListResponse,
+	PasteDeleteResponse,
+	ErrorResponse
+} from '$lib/api/types';
+
 // Define types from API schema
-type Paste = components['schemas']['models.Paste'];
-type CreatePasteRequest = components['schemas']['models.CreatePasteRequest'];
-type UpdatePasteRequest = components['schemas']['models.UpdatePasteRequest'];
-
-type PasteResponse = components['schemas']['models.APIResponse-models_PasteData'];
-type PasteListResponse = components['schemas']['models.APIResponse-models_PasteListData'];
-type PasteDeleteResponse = components['schemas']['models.APIResponse-uint64'];
-
-// Pastes store state
 interface PastesState extends BaseApiState {
 	pastes: Paste[];
 	currentPaste: Paste | null | undefined;

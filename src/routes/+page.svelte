@@ -43,7 +43,7 @@
 		</div>
 
 		<!-- CTA Card -->
-		<div class="card p-10 variant-glass-surface w-full max-w-2xl">
+		<div class="card p-4 sm:p-10 variant-glass-surface w-full max-w-2xl">
 			<a href="/new"><BigPasteButton /></a>
 		</div>
 

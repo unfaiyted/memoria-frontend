@@ -10,7 +10,7 @@
 	}
 </script>
 
-<div class="button-container">
+<div class="button-container max-w-[100%]">
 	<!-- Multiple glow layers for supernova effect -->
 	<div
 		class="glow-layer layer-outer"
@@ -36,12 +36,12 @@
 
 	<!-- Main Button -->
 	<button
-		class="paste-button"
+		class="paste-button max-w-[100%]"
 		class:hovered={isHovered}
 		onmouseenter={onMouseEnter}
 		onmouseleave={onMouseLeave}
 	>
-		<span class="button-text">Paste</span>
+		<span class="button-text max-w-[100%] text-center">Paste</span>
 
 		<!-- Shine effect -->
 		<div class="shine-container">
@@ -97,6 +97,7 @@
 	.paste-button {
 		position: relative;
 		padding: 1.75rem 7rem;
+		max-width: 100%;
 		font-size: 1.5rem;
 		font-weight: 700;
 		border-radius: 9999px;
@@ -112,7 +113,7 @@
 	}
 
 	.button-text {
-		position: relative;
+		/* position: relative; */
 		z-index: 10;
 		color: #1e1e31;
 	}

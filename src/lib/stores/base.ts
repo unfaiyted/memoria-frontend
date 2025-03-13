@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import createClient from 'openapi-fetch';
-import type { paths } from '$lib/api/v1';
+import type { paths } from '$lib/api/memoria.v1';
 import type { ErrorResponse } from '$lib/api/types';
 
 // Base API configuration
