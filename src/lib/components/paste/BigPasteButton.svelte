@@ -18,21 +18,21 @@
 		style:filter="blur(30px)"
 		style:transform={`scale(${isHovered ? 1.5 : 1})`}
 		style:opacity={isHovered ? 1 : 0.5}
-	/>
+	></div>
 	<div
 		class="glow-layer layer-middle"
 		class:hovered={isHovered}
 		style:filter="blur(20px)"
 		style:transform={`scale(${isHovered ? 1.25 : 1})`}
 		style:opacity={isHovered ? 0.8 : 0.4}
-	/>
+	></div>
 	<div
 		class="glow-layer layer-inner"
 		class:hovered={isHovered}
 		style:filter="blur(15px)"
 		style:transform={`scale(${isHovered ? 1.1 : 1})`}
 		style:opacity={isHovered ? 0.9 : 0.3}
-	/>
+	></div>
 
 	<!-- Main Button -->
 	<button
@@ -45,7 +45,7 @@
 
 		<!-- Shine effect -->
 		<div class="shine-container">
-			<div class="shine-effect" class:hovered={isHovered} />
+			<div class="shine-effect" class:hovered={isHovered}></div>
 		</div>
 	</button>
 </div>

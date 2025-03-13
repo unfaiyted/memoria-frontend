@@ -4,377 +4,435 @@
  */
 
 export interface paths {
-	'/health': {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * checks app and database health
-		 * @description returns JSON object with health statuses.
-		 */
-		get: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody?: never;
-			responses: {
-				/** @description OK */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'application/json': components['schemas']['models.HealthResponse'];
-					};
-				};
-				/** @description Internal Server Error */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'application/json': components['schemas']['models.ErrorResponse'];
-					};
-				};
-			};
-		};
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	'/shorten': {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		/**
-		 * Create a shortened URL
-		 * @description Creates a new shortened URL from a long URL, with optional custom code and expiration. If no custom code is provided, one will be generated.
-		 */
-		post: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			/** @description URL to shorten */
-			requestBody: {
-				content: {
-					'application/json': components['schemas']['models.ShortenRequest'];
-				};
-			};
-			responses: {
-				/** @description Successfully created shortened URL */
-				201: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'application/json': components['schemas']['models.APIResponse-models_ShortenData'];
-					};
-				};
-				/** @description Invalid request format or short code already exists */
-				400: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'application/json': components['schemas']['models.ErrorResponse'];
-					};
-				};
-				/** @description Server error */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'application/json': components['schemas']['models.ErrorResponse'];
-					};
-				};
-			};
-		};
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	'/shorten/{code}': {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update a shortened URL
-		 * @description Updates an existing shortened URL by its short code
-		 */
-		put: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path: {
-					/** @description Short code identifier */
-					code: string;
-				};
-				cookie?: never;
-			};
-			/** @description Updated URL data */
-			requestBody: {
-				content: {
-					'application/json': components['schemas']['models.ShortenRequest'];
-				};
-			};
-			responses: {
-				/** @description Successfully updated shortened URL */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'application/json': components['schemas']['models.APIResponse-models_ShortenData'];
-					};
-				};
-				/** @description Invalid request format */
-				400: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'application/json': components['schemas']['models.ErrorResponse'];
-					};
-				};
-				/** @description Short URL not found */
-				404: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'application/json': components['schemas']['models.ErrorResponse'];
-					};
-				};
-				/** @description Server error */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'application/json': components['schemas']['models.ErrorResponse'];
-					};
-				};
-			};
-		};
-		post?: never;
-		/**
-		 * Delete a shortened URL
-		 * @description Deletes an existing shortened URL by its short code
-		 */
-		delete: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path: {
-					/** @description Short code identifier */
-					code: string;
-				};
-				cookie?: never;
-			};
-			requestBody?: never;
-			responses: {
-				/** @description No Content - URL successfully deleted */
-				204: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-				/** @description Bad request - missing code parameter */
-				400: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'*/*': components['schemas']['models.ErrorResponse'];
-					};
-				};
-				/** @description Short URL not found */
-				404: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'*/*': components['schemas']['models.ErrorResponse'];
-					};
-				};
-				/** @description Server error */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'*/*': components['schemas']['models.ErrorResponse'];
-					};
-				};
-			};
-		};
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	'/{code}': {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		/**
-		 * Redirect to original URL
-		 * @description Redirects to the original URL from a short code
-		 */
-		get: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path: {
-					/** @description Short code identifier */
-					code: string;
-				};
-				cookie?: never;
-			};
-			requestBody?: never;
-			responses: {
-				/** @description Found - Redirects to the original URL */
-				302: {
-					headers: {
-						/** @description The URL to redirect to */
-						Location?: string;
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-				/** @description Bad request - missing code parameter */
-				400: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'*/*': components['schemas']['models.ErrorResponse'];
-					};
-				};
-				/** @description Short URL not found or has expired */
-				404: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						'*/*': components['schemas']['models.ErrorResponse'];
-					};
-				};
-			};
-		};
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * checks app and database health
+         * @description returns JSON object with health statuses.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.HealthResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shorten": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a shortened URL
+         * @description Creates a new shortened URL from a long URL, with optional custom code and expiration. If no custom code is provided, one will be generated.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description URL to shorten */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.ShortenRequest"];
+                };
+            };
+            responses: {
+                /** @description Successfully created shortened URL */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.APIResponse-models_ShortenData"];
+                    };
+                };
+                /** @description Invalid request format or short code already exists */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shorten/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check if a URL is already shortened
+         * @description Checks if an original URL already has a short code and optionally creates one if it doesn't exist
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Original URL to check */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.GetByOriginalURLRequest"];
+                };
+            };
+            responses: {
+                /** @description Successfully retrieved shortened URL information */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.APIResponse-models_ShortenData"];
+                    };
+                };
+                /** @description Successfully created new shortened URL */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.APIResponse-models_ShortenData"];
+                    };
+                };
+                /** @description Invalid request format */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Original URL not found and createIfNotExists is false */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shorten/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Redirect to original URL
+         * @description Redirects to the original URL from a short code
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Short code identifier */
+                    code: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Found - Redirects to the original URL */
+                302: {
+                    headers: {
+                        /** @description The URL to redirect to */
+                        Location?: string;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad request - missing code parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Short URL not found or has expired */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        /**
+         * Update a shortened URL
+         * @description Updates an existing shortened URL by its short code
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Short code identifier */
+                    code: string;
+                };
+                cookie?: never;
+            };
+            /** @description Updated URL data */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.ShortenRequest"];
+                };
+            };
+            responses: {
+                /** @description Successfully updated shortened URL */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.APIResponse-models_ShortenData"];
+                    };
+                };
+                /** @description Invalid request format */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Short URL not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Delete a shortened URL
+         * @description Deletes an existing shortened URL by its short code
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Short code identifier */
+                    code: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content - URL successfully deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad request - missing code parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Short URL not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-	schemas: {
-		'models.APIResponse-models_ShortenData': {
-			data?: components['schemas']['models.ShortenData'];
-			/** @example Operation successful */
-			message?: string;
-			/** @example true */
-			success?: boolean;
-		};
-		'models.ErrorResponse': {
-			details?: {
-				[key: string]: unknown;
-			};
-			/** @example FAILED_CHECK */
-			error?: components['schemas']['models.ErrorType'];
-			/** @example This is a pretty message */
-			message?: string;
-			request_id?: string;
-			timestamp?: string;
-		};
-		/** @enum {string} */
-		'models.ErrorType':
-			| 'FAILED_CHECK'
-			| 'UNAUTHORIZED'
-			| 'NOT_FOUND'
-			| 'BAD_REQUEST'
-			| 'INTERNAL_ERROR'
-			| 'FORBIDDEN'
-			| 'CONFLICT'
-			| 'VALIDATION_ERROR'
-			| 'RATE_LIMITED'
-			| 'TIMEOUT'
-			| 'SERVICE_UNAVAILABLE'
-			| 'UNPROCESSABLE_ENTITY';
-		'models.HealthResponse': {
-			/** @example true */
-			application: boolean;
-			/** @example true */
-			database: boolean;
-			/**
-			 * @description Overall status of the system
-			 * @example up
-			 * @enum {string}
-			 */
-			status: 'up' | 'down' | 'degraded';
-		};
-		'models.Shorten': {
-			/** @example 0 */
-			clickCount?: number;
-			createdAt?: string;
-			expiresAt?: string;
-			/** @example 1 */
-			id?: number;
-			/** @example https://example.com/some/long/path */
-			originalUrl: string;
-			/** @example abc123 */
-			shortCode?: string;
-			updatedAt?: string;
-		};
-		'models.ShortenData': {
-			shorten?: components['schemas']['models.Shorten'];
-		};
-		'models.ShortenRequest': {
-			customCode?: string;
-			/** @description In days */
-			expiresAfter?: number;
-			originalUrl: string;
-		};
-	};
-	responses: never;
-	parameters: never;
-	requestBodies: never;
-	headers: never;
-	pathItems: never;
+    schemas: {
+        "models.APIResponse-models_ShortenData": {
+            data?: components["schemas"]["models.ShortenData"];
+            /** @example Operation successful */
+            message?: string;
+            /** @example true */
+            success?: boolean;
+        };
+        "models.ErrorResponse": {
+            details?: {
+                [key: string]: unknown;
+            };
+            /** @example FAILED_CHECK */
+            error?: components["schemas"]["models.ErrorType"];
+            /** @example This is a pretty message */
+            message?: string;
+            request_id?: string;
+            timestamp?: string;
+        };
+        /** @enum {string} */
+        "models.ErrorType": "FAILED_CHECK" | "UNAUTHORIZED" | "NOT_FOUND" | "BAD_REQUEST" | "INTERNAL_ERROR" | "FORBIDDEN" | "CONFLICT" | "VALIDATION_ERROR" | "RATE_LIMITED" | "TIMEOUT" | "SERVICE_UNAVAILABLE" | "UNPROCESSABLE_ENTITY";
+        "models.GetByOriginalURLRequest": {
+            createIfNotExists?: boolean;
+            customCode?: string;
+            expiresAfter?: number;
+            originalUrl: string;
+        };
+        "models.HealthResponse": {
+            /** @example true */
+            application: boolean;
+            /** @example true */
+            database: boolean;
+            /**
+             * @description Overall status of the system
+             * @example up
+             * @enum {string}
+             */
+            status: "up" | "down" | "degraded";
+        };
+        "models.Shorten": {
+            /** @example 0 */
+            clickCount?: number;
+            createdAt?: string;
+            expiresAt?: string;
+            /** @example 1 */
+            id?: number;
+            /** @example https://example.com/some/long/path */
+            originalUrl: string;
+            /** @example abc123 */
+            shortCode?: string;
+            updatedAt?: string;
+        };
+        "models.ShortenData": {
+            shorten?: components["schemas"]["models.Shorten"];
+        };
+        "models.ShortenRequest": {
+            customCode?: string;
+            /** @description In days */
+            expiresAfter?: number;
+            originalUrl: string;
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;

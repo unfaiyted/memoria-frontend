@@ -1,4 +1,4 @@
-import { getToastStore } from '@skeletonlabs/skeleton';
+import type { ToastStore } from '@skeletonlabs/skeleton';
 /**
  * OS detection utility functions
  */
@@ -73,8 +73,7 @@ export const getBrowserInfo = () => {
 };
 
 // Copy paste content to clipboard
-export async function copyToClipboard(content: string): Promise<void> {
-	const toastStore = getToastStore();
+export async function copyToClipboard(content: string, toastStore: ToastStore): Promise<void> {
 	if (!content || content === '') return;
 
 	try {

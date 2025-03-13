@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { currentPaste } from '$lib/stores/pastes';
 	import { popup } from '@skeletonlabs/skeleton';
 	import type { PopupSettings } from '@skeletonlabs/skeleton';
 
@@ -66,6 +65,7 @@
 			class="btn variant-filled-secondary border-l border-l-secondary-400 rounded-l-none rounded-r-md"
 			use:popup={sharePopupSettings}
 			aria-haspopup="true"
+			aria-label="Share Popup"
 		>
 			<svg
 				class="h-5 w-5"
@@ -134,5 +134,5 @@
 			</button>
 		{/if}
 	</div>
-	<div class="arrow bg-surface-100-800-token" />
+	<div class="arrow bg-surface-100-800-token"></div>
 </div>

@@ -305,7 +305,7 @@
 	export let height = '24px';
 
 	/** @type {string} - Fill color of the SVG */
-	export let fill = 'currentColor';
+	// export let fill = 'currentColor';
 
 	// Find the selected SVG
 	$: selectedSvg = icons.find((icon) => icon.name === selected)?.svg || '';

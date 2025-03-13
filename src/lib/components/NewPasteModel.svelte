@@ -2,26 +2,49 @@
 	import type { SvelteComponent } from 'svelte';
 	import Icon from '$lib/components/utils/Icon.svelte';
 
-	import { getModalStore, clipboard } from '@skeletonlabs/skeleton';
+	import { getModalStore, clipboard, getToastStore } from '@skeletonlabs/skeleton';
 	import { copyToClipboard } from '$lib/utils/helpers';
+	import { PORTIS_API_BASE_URL } from '$lib/api/clients';
+	import { shortensStore } from '$lib/stores/shortens';
+	import type { ShortenData } from '$lib/api/types';
 
 	// Props
 	/** Exposes parent props to this component. */
 	export let parent: SvelteComponent;
 
-	// Local
+	const toastStore = getToastStore();
 	const modalStore = getModalStore();
 
 	// Add state for short URL generation
 	let shortUrlGenerated = false;
 	let shortUrl = '';
+	let isGenerating = false;
+	let errorGenerating = false;
 
 	// Function to generate short URL
-	function generateShortUrl() {
-		shortUrlGenerated = true;
-		// This would typically make an API call
-		shortUrl = 'https://short.url/abc123'; // Example value
-		copyToClipboard(shortUrl);
+	async function generateShortUrl() {
+		const originalUrl = $modalStore[0]?.value || '';
+		if (!originalUrl) return;
+
+		isGenerating = true;
+		errorGenerating = false;
+
+		try {
+			const shortenResponse: ShortenData = await shortensStore.fetchOrCreate(originalUrl);
+			if (shortenResponse) {
+				// Construct the short URL based on the response
+				shortUrl = shortenResponse.shortUrl; // Adjust property name if needed
+				shortUrlGenerated = true;
+				copyToClipboard(shortUrl, toastStore);
+			} else {
+				errorGenerating = true;
+			}
+		} catch (error) {
+			console.error('Error generating short URL:', error);
+			errorGenerating = true;
+		} finally {
+			isGenerating = false;
+		}
 	}
 
 	// Handle Form Submission
@@ -128,9 +151,20 @@
 		<div class="flex flex-col">
 			<label class="label mb-2 text-sm" for="shortUrl">Generate short URL:</label>
 			{#if !shortUrlGenerated}
-				<button class="btn variant-filled-primary w-full py-2" onclick={generateShortUrl}>
-					Generate Short URL
+				<button
+					class="btn variant-filled-primary w-full py-2"
+					onclick={generateShortUrl}
+					disabled={isGenerating}
+				>
+					{#if isGenerating}
+						<span class="animate-spin mr-2">⟳</span>
+					{:else}
+						Generate Short URL
+					{/if}
 				</button>
+				{#if errorGenerating}
+					<p class="text-error-500 text-sm mt-1">Failed to generate short URL. Please try again.</p>
+				{/if}
 			{:else}
 				<div
 					class="input-group input-group-divider !bg-white/20 grid-cols-[1fr_auto] !border-white/40 !drop-shadow-md"

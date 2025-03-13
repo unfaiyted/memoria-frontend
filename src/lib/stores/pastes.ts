@@ -3,6 +3,7 @@ import { createBaseStore, type BaseApiState } from './base';
 import { GET, POST, PUT, DELETE } from '$lib/api/clients';
 import { ApiError } from '$lib/api/errors';
 import { pasteStorage } from '$lib/data/storage';
+import type { CreatePasteRequest } from '$lib/api/types';
 
 import type {
 	Paste,
@@ -60,7 +61,7 @@ function createPastesStore() {
 				if (response.error) {
 					const errorData = response.error as ErrorResponse;
 					// TODO: add status to backend type
-					const status = response.error?.status || 500;
+					const status = 500;
 					throw new ApiError(errorData, status);
 				}
 				const data = response.data as PasteListResponse;
@@ -85,7 +86,7 @@ function createPastesStore() {
 				if (response.error) {
 					const errorData = response.error as ErrorResponse;
 					// TODO: add status to backend type
-					const status = response.error?.status || 500;
+					const status = 500;
 					throw new ApiError(errorData, status);
 				}
 				const data = response.data as PasteListResponse;
@@ -112,7 +113,7 @@ function createPastesStore() {
 				if (response.error) {
 					const errorData = response.error as ErrorResponse;
 					// TODO: add status to backend type
-					const status = response.error?.status || 500;
+					const status = 500;
 					throw new ApiError(errorData, status);
 				}
 
@@ -145,7 +146,7 @@ function createPastesStore() {
 				if (response.error) {
 					const errorData = response.error as ErrorResponse;
 					// TODO: add status to backend type
-					const status = response.error?.status || 500;
+					const status = 500;
 					throw new ApiError(errorData, status);
 				}
 
@@ -174,7 +175,7 @@ function createPastesStore() {
 				if (response.error) {
 					const errorData = response.error as ErrorResponse;
 					// TODO: add status to backend type
-					const status = response.error?.status || 500;
+					const status = 500;
 					throw new ApiError(errorData, status);
 				}
 
@@ -204,7 +205,7 @@ function createPastesStore() {
 				if (response.error) {
 					const errorData = response.error as ErrorResponse;
 					// TODO: add status to backend type
-					const status = response.error?.status || 500;
+					const status = 500;
 					throw new ApiError(errorData, status);
 				}
 
@@ -236,7 +237,7 @@ function createPastesStore() {
 				if (response.error) {
 					const errorData = response.error as ErrorResponse;
 					// TODO: add status to backend type
-					const status = response.error?.status || 500;
+					const status = 500;
 					throw new ApiError(errorData, status);
 				}
 

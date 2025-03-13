@@ -9,10 +9,10 @@
 	// For theme toggle state
 	let darkMode = true;
 
-	function toggleTheme() {
-		darkMode = !darkMode;
-		// setMode(darkMode ? 'dark' : 'light');
-	}
+	// function toggleTheme() {
+	// 	darkMode = !darkMode;
+	// 	// setMode(darkMode ? 'dark' : 'light');
+	// }
 
 	const settingsPopupSettings: PopupSettings = {
 		event: 'click',
@@ -118,5 +118,5 @@
 			Github
 		</a>
 	</div>
-	<div class="arrow bg-surface-100-800-token" />
+	<div class="arrow bg-surface-100-800-token"></div>
 </div>

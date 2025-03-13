@@ -1,9 +1,8 @@
 <!-- YOU CAN DELETE EVERYTHING IN THIS PAGE -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { GET } from '$lib/api/client';
+	import { GET } from '$lib/api/clients';
 	import type { UserResponse } from '$lib/api/types';
-	import { baseUrl } from '$lib/stores/api';
 	import Datatable from '$lib/components/tables/Datatable.svelte';
 	// Extract the user type from the OpenAPI paths
 

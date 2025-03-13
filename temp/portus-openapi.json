@@ -99,7 +99,130 @@
         }
       }
     },
+    "/shorten/lookup": {
+      "post": {
+        "description": "Checks if an original URL already has a short code and optionally creates one if it doesn't exist",
+        "tags": [
+          "shorten"
+        ],
+        "summary": "Check if a URL is already shortened",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/models.GetByOriginalURLRequest"
+              }
+            }
+          },
+          "description": "Original URL to check",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved shortened URL information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_ShortenData"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Successfully created new shortened URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.APIResponse-models_ShortenData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Original URL not found and createIfNotExists is false",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/shorten/{code}": {
+      "get": {
+        "description": "Redirects to the original URL from a short code",
+        "tags": [
+          "shorten"
+        ],
+        "summary": "Redirect to original URL",
+        "parameters": [
+          {
+            "description": "Short code identifier",
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Found - Redirects to the original URL",
+            "headers": {
+              "Location": {
+                "description": "The URL to redirect to",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing code parameter",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Short URL not found or has expired",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "description": "Updates an existing shortened URL by its short code",
         "tags": [
@@ -224,59 +347,6 @@
           }
         }
       }
-    },
-    "/{code}": {
-      "get": {
-        "description": "Redirects to the original URL from a short code",
-        "tags": [
-          "shorten"
-        ],
-        "summary": "Redirect to original URL",
-        "parameters": [
-          {
-            "description": "Short code identifier",
-            "name": "code",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "302": {
-            "description": "Found - Redirects to the original URL",
-            "headers": {
-              "Location": {
-                "description": "The URL to redirect to",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing code parameter",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/models.ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Short URL not found or has expired",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/models.ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "servers": [
@@ -359,6 +429,26 @@
           "ErrorTypeServiceUnavailable",
           "ErrorTypeUnprocessableEntity"
         ]
+      },
+      "models.GetByOriginalURLRequest": {
+        "type": "object",
+        "required": [
+          "originalUrl"
+        ],
+        "properties": {
+          "createIfNotExists": {
+            "type": "boolean"
+          },
+          "customCode": {
+            "type": "string"
+          },
+          "expiresAfter": {
+            "type": "integer"
+          },
+          "originalUrl": {
+            "type": "string"
+          }
+        }
       },
       "models.HealthResponse": {
         "type": "object",

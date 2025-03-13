@@ -6,7 +6,6 @@
 	import { javascript } from '@codemirror/lang-javascript';
 	import { oneDark } from '@codemirror/theme-one-dark';
 	import { LanguageSupport } from '@codemirror/language';
-	import { onMount } from 'svelte';
 
 	let {
 		value = '',
